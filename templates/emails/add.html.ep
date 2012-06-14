@@ -1,0 +1,48 @@
+% layout 'mailadmin';
+% title 'Add Email';
+%= include 'elements/topnav'
+%= include 'elements/flash'
+
+% my $address = '';
+% my $id = undef;
+% my $domain_id = stash('domain')->id;
+% my $buttontext = 'Create Email Account';
+% if (my $email = stash 'edit_email'){
+    % $address = $email->address;
+    % $id = $email->id;
+    % $domain_id = $email->domain_id;
+    % $buttontext = 'Save Email Account';
+% }
+
+%= form_for '/emails/create' => ( method => 'POST', class => 'well form-horizontal' ) => begin
+    <div class="control-group">
+        <label for="" class="control-label">Email Address</label>
+        <div class="controls">
+            %= text_field 'address', class => 'span3', type => 'text'
+            % if (my $domain = stash 'domain'){
+                %= '@' . $domain->name
+            % }
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Password</label>
+        <div class="controls">
+                %= password_field 'password'
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Password Verification</label>
+        <div class="controls">
+                %= password_field 'password_verify'
+        </div>
+    </div>
+    %= hidden_field 'id', $id
+    %= hidden_field 'domain_id', $domain_id
+    <div class="control-group">
+        <div class="controls">
+                %= submit_button $buttontext, class => 'btn'
+        </div>
+    </div>
+% end
+
+%= include 'elements/footer'

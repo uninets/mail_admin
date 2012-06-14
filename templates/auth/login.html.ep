@@ -1,0 +1,16 @@
+% layout 'mailadmin';
+% title 'Login';
+%= include 'elements/topnav'
+%= include 'elements/flash'
+
+%= form_for '/authenticate' => ( method => 'POST', class => 'well' ) => begin
+    <label>Username</label>
+    %= text_field 'username', class => 'span3', type => 'text'
+    <label>Password</label>
+    %= password_field 'password'
+    <br />
+    %= submit_button 'Login', class => 'btn'
+% end
+
+%= include 'elements/footer'
+

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title><%= title %></title>
+        <meta name="description" content="Twitter Bootstrap Basic Tab Based Navigation Example">
+        <link href="/bootstrap/css/bootstrap.css" rel="stylesheet">
+        <link href="/css/style.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <%= content %>
+        </div>
+    </body>
+</html>

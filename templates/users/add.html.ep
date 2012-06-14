@@ -1,0 +1,50 @@
+% layout 'mailadmin';
+% title 'Add User';
+%= include 'elements/topnav'
+%= include 'elements/flash'
+
+% my $login = '';
+% my $uid = undef;
+% my $email = '';
+% my $buttontext = 'Create User';
+% if (my $user = stash 'edit_user'){
+    % $login = $user->login;
+    % $uid = $user->id;
+    % $email = $user->email;
+    % $buttontext = 'Save User';
+% }
+
+%= form_for '/users/create' => ( method => 'POST', class => 'well form-horizontal' ) => begin
+    <div class="control-group">
+        <label class="control-label">Login Name</label>
+        <div class="controls">
+                %= text_field 'login', class => 'span3', type => 'text', value => $login
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Email Address</label>
+        <div class="controls">
+                %= text_field 'email', class => 'span3', type => 'text', value => $email
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Password</label>
+        <div class="controls">
+                %= password_field 'password'
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Password Verification</label>
+        <div class="controls">
+                %= password_field 'password_verify'
+        </div>
+    </div>
+    %= hidden_field 'id', $uid
+    <div class="control-group">
+        <div class="controls">
+                %= submit_button $buttontext, class => 'btn'
+        </div>
+    </div>
+% end
+
+%= include 'elements/footer'

@@ -1,0 +1,5 @@
+% if ( my $message = flash 'message' ){
+    % my $class = flash 'class';
+    <div class="<%= $class %>"><%= $message %></div>
+% }
+

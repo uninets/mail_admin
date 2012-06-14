@@ -1,0 +1,42 @@
+% layout 'mailadmin';
+% title 'Add Domain';
+%= include 'elements/topnav'
+%= include 'elements/flash'
+
+% my $domain = '';
+% my $domain_id = undef;
+% my $buttontext = 'Create Domain';
+% if (my $dom = stash 'edit_domain'){
+    % $domain = $dom->name;
+    % $domain_id = $dom->id;
+    % $buttontext = 'Save Domain';
+% }
+
+%= form_for '/domains/create' => ( method => 'POST', class => 'well form-horizontal' ) => begin
+    <div class="control-group">
+        <label class="control-label">Domain Name</label>
+        <div class="controls">
+                %= text_field 'name', class => 'span3', type => 'text'
+        </div>
+    </div>
+    % if ( defined (session 'role') && session('role')->{name} eq 'admin'){
+        <div class="control-group">
+            <label class="control-label">User</label>
+            <div class="controls">
+                <select name="user_id" class="multiple">
+                    % for my $user (@{stash 'userlist'}){
+                        <option value="<%= $user->id %>"><%= $user->login %></option>
+                    % }
+                </select>
+            </div>
+        </div>
+    % }
+    %= hidden_field 'id', $domain_id
+    <div class="control-group">
+        <div class="controls">
+                %= submit_button $buttontext, class => 'btn'
+        </div>
+    </div>
+% end
+
+%= include 'elements/footer'

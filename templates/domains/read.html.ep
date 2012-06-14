@@ -1,0 +1,57 @@
+% layout 'mailadmin';
+% title 'Domains';
+%= include 'elements/topnav'
+%= include 'elements/flash'
+
+<!-- Main Content -->
+<div class="container">
+    <div class="span3">
+        <ul class="nav nav-tabs nav-stacked" id="domainlist">
+            % if (defined stash 'domainlist'){
+                % for my $domain (@{ stash 'domainlist' }){
+                <li class="<%= stash('active')->id == $domain->id ? 'active' : '' %>" ><a href="/domains/show/<%= $domain->id %>"><%= $domain->name %></a></li>
+                % }
+            % }
+        </ul>
+        <ul class="nav nav-tabs nav-stacked"><li><a class="alert-success" href="/domains/new">Add Domain</a></li></ul>
+    </div>
+    <div class="content offset3">
+        %# use Data::Dumper;
+        %#= Dumper stash 'emails'
+        % if (my $active = stash 'active'){
+            <table class="table table-striped">
+                <thead>
+                    <th>Address</th>
+                    <th>Password</th>
+                    <th></th>
+                    <th></th>
+                </thead>
+            % if (my $emails = stash 'emails'){
+                <tbody>
+                % for my $email (@$emails){
+                    <tr>
+                        <td>
+                            <%= $email->address . '@' . $active->name %>
+                        </td>
+                        <td>
+                            <%= $email->password %>
+                        </td>
+                        <td>
+                            <a href="">edit</a>
+                        </td>
+                        <td>
+                            <a href="">delete</a>
+                        </td>
+                    </tr>
+                % }
+                </tbody>
+            % }
+            </table>
+            <a class="pull-right btn alert-error" href="/domains/delete/<%= stash('active')->id %>">Delete Domain</a>
+            <a class="pull-right btn alert-success" href="/emails/new/<%= stash('active')->id %>">Add Email Account</a>
+        % }
+    </div>
+</div>
+<!-- End  -->
+
+%= include 'elements/footer'

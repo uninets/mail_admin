@@ -1,0 +1,27 @@
+<!-- Top Navigation -->
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <ul class="nav">
+                % if ( my $auth = session 'authenticated'){
+                    % my $user = session 'user';
+                    % my $role = session 'role';
+                    <li><a href="/domains">Domains</a></li>
+                    % if ($role->{name} eq 'admin'){
+                        <li><a href="/users">Users</a></li>
+                    % }
+                % }
+            </ul>
+            <ul class="nav pull-right">
+                % if ( my $auth = session 'authenticated'){
+                    % my $user = session 'user';
+                    <li><a href="#"><%= $user->{login} %></a></li>
+                    <li><a href="/logout">Logout</a></li>
+                % } else {
+                    <li><a href="/login">Login</a></li>
+                % }
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- End Top Navigation -->

@@ -1,0 +1,37 @@
+% layout 'mailadmin';
+% title 'Add User';
+%= include 'elements/topnav'
+%= include 'elements/flash'
+
+<table class="table table-striped">
+    <thead>
+        <th>User ID</th>
+        <th>Login</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th></th>
+        <th></th>
+    </thead>
+    % if (my $userlist = stash 'userlist'){
+    <tbody>
+        % for my $user (@$userlist){
+            <tr>
+                % my $role = 'none';
+                <td><%= $user->id %></td>
+                <td><%= $user->login %></td>
+                <td><%= $user->email %></td>
+                % if ($user->role){
+                    % $role = $user->role->name;
+                % }
+                <td><%= $role %></td>
+                <td><a href="/users/edit/<%= $user->id %>">edit</a></td>
+                <td><a href="/users/delete/<%= $user->id %>">delete</a></td>
+            </tr>
+        % }
+    </tbody>
+    % }
+</table>
+
+<a class="pull-right btn alert-success" href="/users/new">Add User</a>
+
+%= include 'elements/footer'

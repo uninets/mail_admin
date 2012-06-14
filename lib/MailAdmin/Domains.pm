@@ -1,0 +1,94 @@
+package MailAdmin::Domains;
+use Mojo::Base 'Mojolicious::Controller';
+use Data::Validate::Domain;
+
+sub add {
+    my $self = shift;
+
+    if ( $self->session('role') && $self->session('role')->{name} eq 'admin' ) {
+        $self->stash( userlist => [ $self->model('User')->all ] );
+    }
+
+    if ( $self->stash('id') ) {
+        $self->stash( edit_domain => $self->model('Domain')->find( $self->stash('id') ) );
+    }
+
+    $self->render();
+}
+
+sub update_or_create {
+    my $self = shift;
+
+    my $record          = {};
+    my $redirect_target = '/domains/new';
+
+    my $domain_name = $self->param('name');
+    my $user_id     = $self->session('user')->{id};
+    if ( $self->session( 'role' eq 'admin' ) ) {
+        $user_id = $self->param('user_id');
+    }
+
+    if ( !is_domain($domain_name) ) {
+        $self->flash( class => 'alert alert-error', message => 'Not a valid domain name!' );
+    }
+    else {
+        $record->{name}    = $domain_name;
+        $record->{user_id} = $user_id;
+
+        $self->model('Domain')->update_or_create($record);
+        $self->flash( class => 'alert alert-success', message => "Domain $domain_name created" );
+        $redirect_target = '/domains';
+    }
+
+    $self->redirect_to($redirect_target);
+}
+
+sub read {
+    my $self = shift;
+
+    if ( $self->session('role') && $self->session('role')->{name} eq 'admin' ) {
+        $self->stash( domainlist => [ $self->model('Domain')->search( {}, { order_by => { -asc => 'name' } } ) ] );
+    }
+    else {
+        $self->stash( domainlist => [ $self->model('Domain')->search( { user_id => $self->session('user')->{id} }, { order_by => { -asc => 'name' } } ) ] );
+    }
+
+    if ( $self->stash('id') ) {
+        $self->stash( active => $self->model('Domain')->find( $self->stash('id') ));
+    }
+    else {
+        if ( $self->stash('domainlist')->[0] ){
+            $self->stash( active => $self->model('Domain')->find( $self->stash('domainlist')->[0]->id ));
+        }
+    }
+
+    my $emails = {};
+    if ($self->stash('active')){
+        $emails = [$self->model('Email')->search({ domain_id => $self->stash('active')->id }, { order_by => { -asc => 'address' }})];
+    }
+
+    $self->stash( emails => $emails );
+
+
+    $self->render();
+}
+
+sub delete {
+    my $self = shift;
+
+    my $domain = $self->model('Domain')->find( { id => $self->stash('id') } );
+    my $domain_name = $domain->name;
+
+    if ( $self->session('user')->{id} == $domain->user_id ) {
+        $domain->delete;
+        $self->flash( class => 'alert alert-info', message => "Deleted $domain_name" );
+    }
+    else {
+        $self->flash( class => 'alert alert-error', message => 'You have no permission to do that!' );
+    }
+
+    $self->redirect_to('/domains');
+}
+
+1;
+
