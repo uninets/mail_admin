@@ -19,7 +19,6 @@ sub startup {
         },
     );
 
-    # Router
     my $r = $self->routes;
 
     $r->add_condition(
@@ -102,6 +101,29 @@ sub startup {
     $r->post('/emails/create')
         ->over('authenticated')
         ->to('emails#update_or_create');
+    $r->get('/emails/delete/:id')
+        ->over('authenticate')
+        ->to('emails#delete');
+
+    $r->get('/aliases/new/:email_id')
+        ->over('authenticated')
+        ->to('aliases#add');
+    $r->post('/aliases/create')
+        ->over('authenticated')
+        ->to('aliases#update_or_create');
+    $r->get('/aliases/delete/:id', id => qr|\d+|)
+        ->over('authenticated')
+        ->to('aliases#delete');
+
+    $r->get('/forwards/new/:email_id')
+        ->over('authenticated')
+        ->to('forwards#add');
+    $r->post('/forwards/create')
+        ->over('authenticated')
+        ->to('forwards#update_or_create');
+    $r->get('/forwards/delete/:id', id => qr|\d+|)
+        ->over('authenticated')
+        ->to('forwards#delete');
 }
 
 1;

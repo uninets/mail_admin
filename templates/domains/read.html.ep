@@ -9,7 +9,7 @@
         <ul class="nav nav-tabs nav-stacked" id="domainlist">
             % if (defined stash 'domainlist'){
                 % for my $domain (@{ stash 'domainlist' }){
-                <li class="<%= stash('active')->id == $domain->id ? 'active' : '' %>" ><a href="/domains/show/<%= $domain->id %>"><%= $domain->name %></a></li>
+                    <li class="<%= stash('active')->id == $domain->id ? 'active' : '' %>" ><a href="/domains/show/<%= $domain->id %>"><%= $domain->name %></a></li>
                 % }
             % }
         </ul>
@@ -19,36 +19,70 @@
         %# use Data::Dumper;
         %#= Dumper stash 'emails'
         % if (my $active = stash 'active'){
-            <table class="table table-striped">
-                <thead>
-                    <th>Address</th>
-                    <th>Password</th>
-                    <th></th>
-                    <th></th>
-                </thead>
-            % if (my $emails = stash 'emails'){
-                <tbody>
-                % for my $email (@$emails){
-                    <tr>
-                        <td>
-                            <%= $email->address . '@' . $active->name %>
-                        </td>
-                        <td>
-                            <%= $email->password %>
-                        </td>
-                        <td>
-                            <a href="">edit</a>
-                        </td>
-                        <td>
-                            <a href="">delete</a>
-                        </td>
-                    </tr>
+            <table class="table table-bordered">
+                % if (my $emails = stash 'emails'){
+                    <tbody>
+                    % for my $email (@$emails){
+                        <tr>
+                            <td>
+                                <a href="/emails/delete/<%= $email->id %>"><i class="icon-minus"></i></a> <a href="/emails/edit/<%= $email->id %>"><%= $email->address . '@' . $active->name %></a>
+                            </td>
+                            <td>
+                                % if ($email->aliases > 0){
+                                    <ul class="nav nav-list">
+                                        <li class="nav-header">Aliases</li>
+                                        % for my $alias ($email->aliases){
+                                        <li>
+                                            <span>
+                                                <a href="/aliases/delete/<%= $alias->id %>">
+                                                    <i class="icon-minus"></i>
+                                                </a><a href="/aliases/edit/<%= $alias->id %>">
+                                                    <%= $alias->address . '@' . $alias->email->domain->name %>
+                                                </a>
+                                            </span>
+                                        </li>
+                                        % }
+                                    </ul>
+                                % }
+                                <ul class="nav nav-list">
+                                    <li>
+                                        <a class="alert-success" href="/aliases/new/<%= $email->id %>"><i class="icon-plus"></i> Add Alias</a>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td>
+                                % if ($email->forwards > 0){
+                                    <ul class="nav nav-list">
+                                        <li class="nav-header">Forwards</li>
+                                        % for my $forward ($email->forwards){
+                                        <li>
+                                            <span>
+                                                <a href="/aliases/delete/<%= $forward->id %>">
+                                                    <i class="icon-minus"></i>
+                                                </a>
+                                                <a href="/forwards/edit/<%= $forward->id %>">
+                                                    <%= $forward->address %>
+                                                </a>
+                                            </span>
+                                        </li>
+                                        % }
+                                    </ul>
+                                % }
+                                <ul class="nav nav-list">
+                                    <li>
+                                        <a class="alert-success" href="/forwards/new/<%= $email->id %>"><i class="icon-plus"></i> Add Forward</a>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    % }
+                    </tbody>
                 % }
-                </tbody>
-            % }
             </table>
-            <a class="pull-right btn alert-error" href="/domains/delete/<%= stash('active')->id %>">Delete Domain</a>
-            <a class="pull-right btn alert-success" href="/emails/new/<%= stash('active')->id %>">Add Email Account</a>
+            <div class="btn-group pull-right">
+                <a class="btn alert-success" href="/emails/new/<%= stash('active')->id %>">Add Email Account</a>
+                <a class="btn alert-error" href="/domains/delete/<%= stash('active')->id %>">Delete Domain</a>
+            </div>
         % }
     </div>
 </div>

@@ -1,6 +1,6 @@
 package MailAdmin::Auth;
 use Mojo::Base 'Mojolicious::Controller';
-use Digest::MD5 'md5_base64';
+use Digest::MD5 'md5_hex';
 use DBIx::Class::ResultClass::HashRefInflator;
 
 sub login {
@@ -16,7 +16,7 @@ sub authenticate {
     my $username = $self->param('username');
     my $password = $self->param('password');
 
-    my $md5sum = md5_base64($password);
+    my $md5sum = md5_hex($password);
     my $user = $self->model('User')->find({ login => $username }, { result_class => 'DBIx::Class::ResultClass::HashRefInflator' });
     my $role = $self->model('Role')->find($user->{role_id}, { result_class => 'DBIx::Class::ResultClass::HashRefInflator' });
 

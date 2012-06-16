@@ -1,6 +1,7 @@
 package MailAdmin::Emails;
 use Mojo::Base 'Mojolicious::Controller';
 use Email::Valid;
+use Digest::MD5 'md5_hex';
 
 sub add {
     my $self = shift;
@@ -57,7 +58,7 @@ sub update_or_create {
     else {
         $record->{address} = $address;
         $record->{domain_id} = $domain_id;
-        $record->{password} = $password;
+        $record->{password} = md5_hex($password);
         $record->{id} = $id if $id;
 
         $self->model('Email')->update_or_create($record);
