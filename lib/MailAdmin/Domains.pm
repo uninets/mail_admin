@@ -23,9 +23,13 @@ sub update_or_create {
     my $redirect_target = '/domains/new';
 
     my $domain_name = $self->param('name');
-    my $user_id     = $self->session('user')->{id};
-    if ( $self->session( 'role' eq 'admin' ) ) {
+    my $user_id     = undef;
+
+    if ( $self->session('role')->{name} eq 'admin') {
         $user_id = $self->param('user_id');
+    }
+    else {
+        $user_id = $self->session('user')->{id};
     }
 
     if ( !is_domain($domain_name) ) {
