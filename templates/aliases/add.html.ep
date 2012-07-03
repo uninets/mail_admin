@@ -1,0 +1,26 @@
+% layout 'mailadmin';
+% title 'Add Alias';
+%= include 'elements/topnav'
+%= include 'elements/flash'
+
+%= form_for '/aliases/create' => ( method => 'POST', class => 'well form-horizontal' ) => begin
+    <div class="control-group">
+        <label for="" class="control-label">Alias Address</label>
+        <div class="controls">
+            %= text_field 'address', class => 'span3', type => 'text'
+            %= '@' . $email->domain->name
+            <p class="help-block">
+                The Emails will be put into the inbox of
+                <%= $email->address . '@' . $email->domain->name %>.
+            </p>
+        </div>
+    </div>
+    %= hidden_field 'email_id', $email_id
+    <div class="control-group">
+        <div class="controls">
+            %= submit_button 'Create Alias', class => 'btn'
+        </div>
+    </div>
+% end
+
+%= include 'elements/footer'

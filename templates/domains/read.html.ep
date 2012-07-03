@@ -36,15 +36,17 @@
                                             <span>
                                                 <a href="/aliases/delete/<%= $alias->id %>">
                                                     <i class="icon-minus"></i>
-                                                </a><a href="/aliases/edit/<%= $alias->id %>">
-                                                    <%= $alias->address . '@' . $alias->email->domain->name %>
                                                 </a>
+                                                <%= $alias->address . '@' . $alias->email->domain->name %>
                                             </span>
                                         </li>
                                         % }
                                     </ul>
                                 % }
                                 <ul class="nav nav-list">
+                                    <li>
+                                        <p></p>
+                                    </li>
                                     <li>
                                         <a class="alert-success" href="/aliases/new/<%= $email->id %>"><i class="icon-plus"></i> Add Alias</a>
                                     </li>
@@ -57,18 +59,19 @@
                                         % for my $forward ($email->forwards){
                                         <li>
                                             <span>
-                                                <a href="/aliases/delete/<%= $forward->id %>">
+                                                <a href="/forwards/delete/<%= $forward->id %>">
                                                     <i class="icon-minus"></i>
                                                 </a>
-                                                <a href="/forwards/edit/<%= $forward->id %>">
-                                                    <%= $forward->address %>
-                                                </a>
+                                                <%= $forward->address %>
                                             </span>
                                         </li>
                                         % }
                                     </ul>
                                 % }
                                 <ul class="nav nav-list">
+                                    <li>
+                                        <p></p>
+                                    </li>
                                     <li>
                                         <a class="alert-success" href="/forwards/new/<%= $email->id %>"><i class="icon-plus"></i> Add Forward</a>
                                     </li>

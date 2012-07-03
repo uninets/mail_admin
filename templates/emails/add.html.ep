@@ -18,7 +18,11 @@
     <div class="control-group">
         <label for="" class="control-label">Email Address</label>
         <div class="controls">
-            %= text_field 'address', class => 'span3', type => 'text'
+            % my $value = '';
+            % if ( stash('edit_email')){
+            %     $value = stash('edit_email')->address;
+            % }
+            %= text_field 'address', class => 'span3', type => 'text', value => $value
             % if (my $domain = stash 'domain'){
                 %= '@' . $domain->name
             % }

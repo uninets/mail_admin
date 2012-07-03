@@ -1,0 +1,24 @@
+% layout 'mailadmin';
+% title 'Add Forward';
+%= include 'elements/topnav'
+%= include 'elements/flash'
+
+%= form_for '/forwards/create' => ( method => 'POST', class => 'well form-horizontal' ) => begin
+    <div class="control-group">
+        <label for="" class="control-label">Forward Address</label>
+        <div class="controls">
+            %= text_field 'address', class => 'span3', type => 'text'
+            <p class="help-block">
+                Emails to <%= $email->address . '@' . $email->domain->name %> will be forwarded to this address.
+            </p>
+        </div>
+    </div>
+    %= hidden_field 'email_id', $email_id
+    <div class="control-group">
+        <div class="controls">
+            %= submit_button 'Create Forward', class => 'btn'
+        </div>
+    </div>
+% end
+
+%= include 'elements/footer'

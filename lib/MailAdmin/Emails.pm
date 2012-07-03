@@ -5,8 +5,18 @@ use Digest::MD5 'md5_hex';
 
 sub add {
     my $self = shift;
+    my $domain;
 
-    my $domain = $self->model('Domain')->find({ id => $self->stash('domain_id') });
+    # edit
+    if ($self->stash('id')){
+        my $email = $self->model('Email')->find({ id => $self->stash('id') });
+        $self->stash( edit_email => $email );
+        $domain = $self->model('Domain')->find({ id => $email->domain_id });
+    }
+    # create
+    elsif ($self->stash('domain_id')){
+        $domain = $self->model('Domain')->find({ id => $self->stash('domain_id') });
+    }
 
     if (!$domain){
         $self->flash(class => 'alert alert-error', message => 'No such domain!');
@@ -16,11 +26,6 @@ sub add {
     }
     else {
         $self->flash(class => 'alert alert-error', message => 'You are not allowed to add emails to this domain!');
-    }
-
-    if ($self->stash('id')){
-        my $email = $self->model('Email')->find({ id => $self->stash('id') });
-        $self->stash( edit_email => $email );
     }
 
     $self->render( from => $self->req->url->path );
@@ -35,9 +40,10 @@ sub update_or_create {
     my $address = $self->param('address');
     my $password = $self->param('password');
     my $password_v = $self->param('password_verify');
-    my $domain_id = $self->param('domain_id');
     my $id = $self->param('id');
+    my $domain_id = $self->param('domain_id');
 
+    $domain_id = $self->model('Email')->find($id)->domain_id unless $domain_id;
     my $domain = $self->model('Domain')->find($domain_id);
 
     if (!$domain){
@@ -74,7 +80,20 @@ sub update_or_create {
 sub delete {
     my $self = shift;
 
-    $self->render();
+    my $domain = $self->model('Email')->find($self->stash('id'))->domain;
+
+    if ($self->session->{user}->{id} != $domain->user_id && $self->session->{role}->{name} ne 'admin' ){
+        $self->flash(class => 'alert alert-error', message => 'Not authorized!');
+        $self->redirect_to('/domains');
+    }
+    else {
+        my $email = $self->model('Email')->find($self->stash('id'));
+        my $address = $email->address;
+        $email->delete;
+        $self->flash(class => 'alert alert-info', message => 'Deleted ' . $address . '@' . $domain->name . '.' );
+    }
+
+    $self->redirect_to('/domains/show/' . $domain->id );
 }
 
 1;

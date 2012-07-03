@@ -95,14 +95,14 @@ sub startup {
     $r->get('/emails/new/:domain_id')
         ->over('authenticated')
         ->to('emails#add');
-    $r->get('/emails/edit/:domain_id/:id')
+    $r->get('/emails/edit/:id')
         ->over('authenticated')
         ->to('emails#add');
     $r->post('/emails/create')
         ->over('authenticated')
         ->to('emails#update_or_create');
     $r->get('/emails/delete/:id')
-        ->over('authenticate')
+        ->over('authenticated')
         ->to('emails#delete');
 
     $r->get('/aliases/new/:email_id')
