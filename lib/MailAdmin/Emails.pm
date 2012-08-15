@@ -58,7 +58,7 @@ sub update_or_create {
     elsif ($password ne $password_v){
         $self->flash(class => 'alert alert-error', message => 'Passords do not match!');
     }
-    elsif ($password eq''){
+    elsif ($password eq ''){
         $self->flash(class => 'alert alert-error', message => 'Passord must not be empty!');
     }
     else {
@@ -74,7 +74,7 @@ sub update_or_create {
         $redirect_target = '/domains/show/' . $domain->id;
     }
 
-    $self->redirect_to($redirect_target);
+    $self->redirect_to('/domains/show/' . $domain->id);
 }
 
 sub delete {
