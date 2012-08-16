@@ -66,8 +66,7 @@ sub update_or_create {
         my $digest = md5_hex($address . ':' . $domain->name . ':' . $password);
         $record->{address} = $address;
         $record->{domain_id} = $domain_id;
-        # prepend the password scheme
-        $record->{password} = '{DIGEST-MD5}' . $digest;
+        $record->{password} = $digest;
         $record->{id} = $id if $id;
 
         $self->model('Email')->update_or_create($record);
