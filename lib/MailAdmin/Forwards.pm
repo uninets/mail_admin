@@ -25,7 +25,7 @@ sub update_or_create {
 
     my $email = $self->model('Email')->find($email_id);
 
-    if (!($self->session->{user}->{id} != $email->domain->user->id) && $self->session->{role}->{name} ne 'admin'){
+    if ($self->session->{user}->{id} != $email->domain->user->id && $self->session->{role}->{name} ne 'admin'){
         $self->flash(class => 'alert alert-error', message => 'Not authorized to add forwards to this address!');
         $self->redirect_to('/domains');
     }
