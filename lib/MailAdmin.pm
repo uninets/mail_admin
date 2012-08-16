@@ -34,12 +34,8 @@ sub startup {
         user_authenticate => sub {
             my ($self, $user, $password) = @_;
 
-            use Data::Dumper;
-            say Dumper $user;
-
             # get salt of user
             my $salt = (split /\$/, $user->{password})[2];
-            say $salt;
 
             # no salt? user does not exist
             return 0 unless $salt;

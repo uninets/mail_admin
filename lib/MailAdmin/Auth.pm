@@ -20,6 +20,7 @@ sub authenticate {
 
     if ($self->user_authenticate($user, $password)){
         $self->session( user => undef, authenticated => undef );
+        delete $user->{password};
         $self->session( authenticated => 1, user => $user, role => $role ? $role : { name => 'none' } );
         $self->flash(class => 'alert alert-success', message => 'Login successful!');
     }

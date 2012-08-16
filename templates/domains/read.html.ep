@@ -48,7 +48,7 @@
                                         <p></p>
                                     </li>
                                     <li>
-                                        <a class="alert-success" href="/aliases/new/<%= $email->id %>"><i class="icon-plus"></i> Add Alias</a>
+                                        <a class="" href="/aliases/new/<%= $email->id %>"><i class="icon-plus"></i> Add Alias</a>
                                     </li>
                                 </ul>
                             </td>
@@ -73,7 +73,7 @@
                                         <p></p>
                                     </li>
                                     <li>
-                                        <a class="alert-success" href="/forwards/new/<%= $email->id %>"><i class="icon-plus"></i> Add Forward</a>
+                                        <a class="" href="/forwards/new/<%= $email->id %>"><i class="icon-plus"></i> Add Forward</a>
                                     </li>
                                 </ul>
                             </td>
