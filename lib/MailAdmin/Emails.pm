@@ -62,9 +62,12 @@ sub update_or_create {
         $self->flash(class => 'alert alert-error', message => 'Passord must not be empty!');
     }
     else {
+        # create digest-md5 with user, realm and password
+        my $digest = md5_hex($address . ':' . $domain->name . ':' . $password);
         $record->{address} = $address;
         $record->{domain_id} = $domain_id;
-        $record->{password} = md5_hex($password);
+        # prepend the password scheme
+        $record->{password} = '{DIGEST-MD5}' . $digest;
         $record->{id} = $id if $id;
 
         $self->model('Email')->update_or_create($record);
