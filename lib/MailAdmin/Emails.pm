@@ -1,8 +1,6 @@
 package MailAdmin::Emails;
 use Mojo::Base 'Mojolicious::Controller';
 use Email::Valid;
-use String::Random;
-use Crypt::Passwd::XS 'unix_sha512_crypt';
 
 sub add {
     my $self = shift;
@@ -65,7 +63,7 @@ sub update_or_create {
     else {
         $record->{address} = $address;
         $record->{domain_id} = $domain_id;
-        $record->{password} = $self->_make_crypted_password($password);
+        $record->{password} = $self->encrypt_password($password);
         $record->{id} = $id if $id;
 
         $self->model('Email')->update_or_create($record);
@@ -95,13 +93,6 @@ sub delete {
     }
 
     $self->redirect_to('/domains/show/' . $domain->id );
-}
-
-sub _make_crypted_password {
-    my ($self, $plain) = @_;
-
-    my $salt = String::Random::random_string('s' x 16);
-    return Crypt::Passwd::XS::unix_sha512_crypt($plain, $salt);
 }
 
 1;

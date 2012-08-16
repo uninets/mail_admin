@@ -3,6 +3,10 @@ use Mojo::Base 'Mojolicious';
 use lib 'lib';
 use MailAdmin::Schema;
 
+# for encrypt helper
+use String::Random;
+use Crypt::Passwd::XS 'unix_sha512_crypt';
+
 # This method will run once at server start
 sub startup {
     my $self = shift;
@@ -16,7 +20,33 @@ sub startup {
             my $resultset = $_[1];
             my $model     = MailAdmin::Schema->connect('dbi:Pg:dbname=mailadmin;host=localhost;user=mailadmin;password=mailadmin;');
             return $resultset ? $model->resultset($resultset) : $model;
-        },
+        }
+    );
+    $self->helper(
+        encrypt_password => sub {
+            my ($self, $plaintext) = @_;
+
+            my $salt = String::Random::random_string('s' x 16);
+            return Crypt::Passwd::XS::unix_sha512_crypt($plaintext, $salt);
+        }
+    );
+    $self->helper(
+        user_authenticate => sub {
+            my ($self, $user, $password) = @_;
+
+            use Data::Dumper;
+            say Dumper $user;
+
+            # get salt of user
+            my $salt = (split /\$/, $user->{password})[2];
+            say $salt;
+
+            # no salt? user does not exist
+            return 0 unless $salt;
+
+            # check if given pass salted and hashed matches
+            return Crypt::Passwd::XS::unix_sha512_crypt($password, $salt) eq $user->{password} ? 1 : 0;
+        }
     );
 
     my $r = $self->routes;

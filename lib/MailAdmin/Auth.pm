@@ -1,6 +1,5 @@
 package MailAdmin::Auth;
 use Mojo::Base 'Mojolicious::Controller';
-use Digest::MD5 'md5_hex';
 use DBIx::Class::ResultClass::HashRefInflator;
 
 sub login {
@@ -16,18 +15,17 @@ sub authenticate {
     my $username = $self->param('username');
     my $password = $self->param('password');
 
-    my $md5sum = md5_hex($password);
     my $user = $self->model('User')->find({ login => $username }, { result_class => 'DBIx::Class::ResultClass::HashRefInflator' });
     my $role = $self->model('Role')->find($user->{role_id}, { result_class => 'DBIx::Class::ResultClass::HashRefInflator' });
 
-    if ($md5sum ne $user->{password}){
-        $redirect_target = '/login';
-        $self->flash(class => 'alert alert-error', message => "Login failed!");
-    }
-    else {
+    if ($self->user_authenticate($user, $password)){
         $self->session( user => undef, authenticated => undef );
         $self->session( authenticated => 1, user => $user, role => $role ? $role : { name => 'none' } );
         $self->flash(class => 'alert alert-success', message => 'Login successful!');
+    }
+    else {
+        $redirect_target = '/login';
+        $self->flash(class => 'alert alert-error', message => "Login failed!");
     }
 
     $self->redirect_to($redirect_target);
