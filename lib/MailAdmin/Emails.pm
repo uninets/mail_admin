@@ -1,7 +1,8 @@
 package MailAdmin::Emails;
 use Mojo::Base 'Mojolicious::Controller';
 use Email::Valid;
-use Digest::MD5 'md5_hex';
+use String::Random;
+use Crypt::Passwd::XS 'unix_sha512_crypt';
 
 sub add {
     my $self = shift;
@@ -62,11 +63,9 @@ sub update_or_create {
         $self->flash(class => 'alert alert-error', message => 'Passord must not be empty!');
     }
     else {
-        # create digest-md5 with user, realm and password
-        my $digest = md5_hex($address . ':' . $domain->name . ':' . $password);
         $record->{address} = $address;
         $record->{domain_id} = $domain_id;
-        $record->{password} = $digest;
+        $record->{password} = $self->_make_crypted_password($password);
         $record->{id} = $id if $id;
 
         $self->model('Email')->update_or_create($record);
@@ -96,6 +95,13 @@ sub delete {
     }
 
     $self->redirect_to('/domains/show/' . $domain->id );
+}
+
+sub _make_crypted_password {
+    my ($self, $plain) = @_;
+
+    my $salt = String::Random::random_string('s' x 16);
+    return Crypt::Passwd::XS::unix_sha512_crypt($plain, $salt);
 }
 
 1;
