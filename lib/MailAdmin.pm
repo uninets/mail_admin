@@ -15,6 +15,12 @@ sub startup {
     $self->plugin('PODRenderer');
     $self->plugin('TagHelpers');
 
+    $self->config(
+        hypnotoad => {
+            listen => ['http://*:8081'],
+        }
+    );
+
     $self->helper(
         model => sub {
             my $resultset = $_[1];
