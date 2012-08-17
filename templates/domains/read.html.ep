@@ -25,7 +25,7 @@
                     % for my $email (@$emails){
                         <tr>
                             <td>
-                                <a href="/emails/delete/<%= $email->id %>"><i class="icon-minus"></i></a> <a href="/emails/edit/<%= $email->id %>"><%= $email->address . '@' . $active->name %></a>
+                                <a class="label label-important" href="/emails/delete/<%= $email->id %>">delete</a>  <a href="/emails/edit/<%= $email->id %>"><%= $email->address . '@' . $active->name %></a>
                             </td>
                             <td>
                                 % if ($email->aliases > 0){
@@ -34,21 +34,18 @@
                                         % for my $alias ($email->aliases){
                                         <li>
                                             <span>
-                                                <a href="/aliases/delete/<%= $alias->id %>">
-                                                    <i class="icon-minus"></i>
-                                                </a>
-                                                <%= $alias->address . '@' . $alias->email->domain->name %>
+                                                <a class="label label-important" href="/aliases/delete/<%= $alias->id %>">delete</a> <%= $alias->address . '@' . $alias->email->domain->name %>
                                             </span>
                                         </li>
                                         % }
                                     </ul>
                                 % }
                                 <ul class="nav nav-list">
+                                    <li><p></p></li>
                                     <li>
-                                        <p></p>
-                                    </li>
-                                    <li>
-                                        <a class="" href="/aliases/new/<%= $email->id %>"><i class="icon-plus"></i> Add Alias</a>
+                                        <span>
+                                            <a class="label label-info" href="/aliases/new/<%= $email->id %>">Add Alias</a>
+                                        </span>
                                     </li>
                                 </ul>
                             </td>
@@ -59,21 +56,18 @@
                                         % for my $forward ($email->forwards){
                                         <li>
                                             <span>
-                                                <a href="/forwards/delete/<%= $forward->id %>">
-                                                    <i class="icon-minus"></i>
-                                                </a>
-                                                <%= $forward->address %>
+                                                <a class="label label-important" href="/forwards/delete/<%= $forward->id %>">delete</a> <%= $forward->address %>
                                             </span>
                                         </li>
                                         % }
                                     </ul>
                                 % }
                                 <ul class="nav nav-list">
+                                    <li><p></p></li>
                                     <li>
-                                        <p></p>
-                                    </li>
-                                    <li>
-                                        <a class="" href="/forwards/new/<%= $email->id %>"><i class="icon-plus"></i> Add Forward</a>
+                                        <span>
+                                            <a class="label label-info" href="/forwards/new/<%= $email->id %>">Add Forward</a>
+                                        </span>
                                     </li>
                                 </ul>
                             </td>
