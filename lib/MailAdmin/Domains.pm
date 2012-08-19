@@ -56,10 +56,10 @@ sub read {
     my $self = shift;
 
     if ( $self->session('role') && $self->session('role')->{name} eq 'admin' ) {
-        $self->stash( domainlist => [ $self->model('Domain')->search( {}, { order_by => { -asc => 'name' } } ) ] );
+        $self->stash( domainlist => [ $self->model('Domain')->order_by_name({}) ] );
     }
     else {
-        $self->stash( domainlist => [ $self->model('Domain')->search( { user_id => $self->session('user')->{id} }, { order_by => { -asc => 'name' } } ) ] );
+        $self->stash( domainlist => [ $self->model('Domain')->order_by_name( { user_id => $self->session('user')->{id} } ) ] );
     }
 
     if ( $self->stash('id') ) {

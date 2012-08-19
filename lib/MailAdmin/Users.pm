@@ -58,8 +58,8 @@ sub update_or_create {
 
         # update session data
         if ($self->session('user')->{id} == $id){
-            my $user = $self->model('User')->find( $id, { result_class => 'DBIx::Class::ResultClass::HashRefInflator' } );
-            my $role = $self->model('Role')->find( { name => $self->session('role')->{name} }, { result_class => 'DBIx::Class::ResultClass::HashRefInflator' } );
+            my $user = $self->model('User')->as_hash($id);
+            my $role = $self->model('Role')->as_hash({ name => $self->session('role')->{name} });
 
             $self->session( user => undef, authenticated => undef );
             delete $user->{password};
