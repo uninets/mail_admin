@@ -8,7 +8,15 @@ sub add {
     if (my $id = $self->stash('id')){
         my $user = $self->model('User')->find($id);
 
+        if (!$self->check_user_permission($user->id)){
+            $self->flash( class => 'alert alert-error', message => 'You can not change other users!');
+            $self->redirect('/');
+        }
         $self->stash( edit_user => $user );
+    }
+    elsif (!$self->session->{role}->{name} eq 'admin'){
+        $self->flash( class => 'alert alert-error', message => 'Only admins can create users!');
+        $self->redirect('/');
     }
 
     $self->render();
@@ -48,7 +56,17 @@ sub update_or_create {
 
         $self->flash(class => 'alert alert-success', message => $id ? "User $username saved" : "User $username created");
 
-        $redirect_target = '/users/list';
+        # update session data
+        if ($self->session('user')->{id} == $id){
+            my $user = $self->model('User')->find( $id, { result_class => 'DBIx::Class::ResultClass::HashRefInflator' } );
+            my $role = $self->model('Role')->find( { name => $self->session('role')->{name} }, { result_class => 'DBIx::Class::ResultClass::HashRefInflator' } );
+
+            $self->session( user => undef, authenticated => undef );
+            delete $user->{password};
+            $self->session( authenticated => 1, user => $user, role => $role ? $role : { name => 'none' } );
+        }
+
+        $redirect_target = $self->session->{role}->{name} eq 'admin' ? '/users/list' : '/domains';
     }
 
     $self->redirect_to($redirect_target);

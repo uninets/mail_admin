@@ -117,10 +117,10 @@ sub startup {
         ->over('admin_role')
         ->to('users#add');
     $r->get('/users/edit/:id', id => qr|\d+|)
-        ->over('admin_role')
+        ->over('authenticated')
         ->to('users#add');
     $r->post('/users/create')
-        ->over('admin_role')
+        ->over('authenticated')
         ->to('users#update_or_create');
     $r->get('/users/list')
         ->over('admin_role')
