@@ -20,7 +20,7 @@ sub add {
     if (!$domain){
         $self->flash(class => 'alert alert-error', message => 'No such domain!');
     }
-    elsif ($self->session('user')->{id} == $domain->user_id || $self->session('role')->{name} eq 'admin'){
+    elsif ($self->check_user_permission($domain->user_id)){
         $self->stash( domain => $domain );
     }
     else {
@@ -48,7 +48,7 @@ sub update_or_create {
     if (!$domain){
         $self->flash(class => 'alert alert-error', message => 'No such domain');
     }
-    elsif (!($domain->user_id == $self->session('user')->{id}) && !($self->session('role')->{name} eq 'admin') ){
+    elsif (!$self->check_user_permission($domain->user_id) ){
         $self->flash(class => 'alert alert-error', message => 'Not authorized to add email accounts to this domain!');
     }
     elsif (!Email::Valid->address($address . '@' . $domain->name)){
@@ -81,7 +81,7 @@ sub delete {
 
     my $domain = $self->model('Email')->find($self->stash('id'))->domain;
 
-    if ($self->session->{user}->{id} != $domain->user_id && $self->session->{role}->{name} ne 'admin' ){
+    if (!$self->check_user_permission($domain->user_id)){
         $self->flash(class => 'alert alert-error', message => 'Not authorized!');
         $self->redirect_to('/domains');
     }

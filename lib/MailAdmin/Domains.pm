@@ -32,8 +32,13 @@ sub update_or_create {
         $user_id = $self->session('user')->{id};
     }
 
+    my $domain = $self->model('Domain')->find( { name => $domain_name } );
+
     if ( !is_domain($domain_name) ) {
         $self->flash( class => 'alert alert-error', message => 'Not a valid domain name!' );
+    }
+    elsif ( defined $domain && !$self->check_user_permission($domain->user_id)){
+        $self->flash( class => 'alert alert-error', message => 'Domain exist but is not owned by you!' );
     }
     else {
         $record->{name}    = $domain_name;

@@ -51,6 +51,14 @@ sub startup {
         }
     );
 
+    $self->helper(
+        check_user_permission => sub {
+            my ($self, $check_id) = @_;
+
+            return ($check_id == $self->session('user')->{id} || $self->session('role')->{name} eq 'admin') ? 1 : 0;
+        }
+    );
+
     my $r = $self->routes;
 
     $r->add_condition(
