@@ -2,6 +2,7 @@ package MailAdmin;
 use Mojo::Base 'Mojolicious';
 use lib 'lib';
 use MailAdmin::Schema;
+use DBIx::Connector;
 
 # for encrypt helper
 use String::Random;
@@ -10,6 +11,8 @@ use Crypt::Passwd::XS 'unix_sha512_crypt';
 # This method will run once at server start
 sub startup {
     my $self = shift;
+
+    my $connector = DBIx::Connector->new('dbi:Pg:dbname=mailadmin;host=localhost;', 'mailadmin', 'mailadmin');
 
     # Documentation browser under "/perldoc"
     $self->plugin('PODRenderer');
@@ -24,7 +27,7 @@ sub startup {
     $self->helper(
         model => sub {
             my $resultset = $_[1];
-            my $model     = MailAdmin::Schema->connect('dbi:Pg:dbname=mailadmin;host=localhost;user=mailadmin;password=mailadmin;');
+            my $model     = MailAdmin::Schema->connect(sub { return $connector->dbh });
             return $resultset ? $model->resultset($resultset) : $model;
         }
     );
