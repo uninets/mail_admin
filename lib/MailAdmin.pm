@@ -19,6 +19,13 @@ sub startup {
 
     $self->config( YAML::LoadFile('config.yml') );
 
+    if (defined $self->config->{session_secret}){
+        $self->secret( $self->config->{session_secret} );
+    }
+    else {
+        $self->secret( 'xNV3sX7P5xxHzBeNp0YEmDwKpBl6AHIhOpV0v2hXt9chpGnvGUNUtTsYGIb33d94' );
+    }
+
     my $dsn = 'dbi:' . $self->config->{database}->{driver} . ':dbname=' . $self->config->{database}->{dbname} . ';host=' . $self->config->{database}->{dbhost};
     my $connector = DBIx::Connector->new($dsn, $self->config->{database}->{dbuser}, $self->config->{database}->{dbpass});
 
