@@ -61,7 +61,7 @@ sub update_or_create {
         $self->flash(class => 'alert alert-error', message => 'Passord must not be empty!');
     }
     else {
-        $record->{address} = $address;
+        $record->{address} = $self->trim($address);
         $record->{domain_id} = $domain_id;
         $record->{password} = $self->encrypt_password($password);
         $record->{id} = $id if $id;
