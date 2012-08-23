@@ -1,8 +1,13 @@
 package MailAdmin;
 use Mojo::Base 'Mojolicious';
 use lib 'lib';
+
+# database schema and connection manager
 use MailAdmin::Schema;
 use DBIx::Connector;
+
+# to load config
+use YAML;
 
 # for encrypt helper
 use String::Random;
@@ -12,23 +17,23 @@ use Crypt::Passwd::XS 'unix_sha512_crypt';
 sub startup {
     my $self = shift;
 
-    my $connector = DBIx::Connector->new('dbi:Pg:dbname=mailadmin;host=localhost;', 'mailadmin', 'mailadmin');
+    $self->config( YAML::LoadFile('config.yml') );
+
+    my $dsn = 'dbi:' . $self->config->{database}->{driver} . ':dbname=' . $self->config->{database}->{dbname} . ';host=' . $self->config->{database}->{dbhost};
+    my $connector = DBIx::Connector->new($dsn, $self->config->{database}->{dbuser}, $self->config->{database}->{dbpass});
+
+    use Data::Dumper;
+    say Dumper $self->config;
 
     # Documentation browser under "/perldoc"
     $self->plugin('PODRenderer');
     $self->plugin('TagHelpers');
 
-    $self->config(
-        hypnotoad => {
-            listen => ['http://*:8081'],
-        }
-    );
-
     $self->helper(
         model => sub {
             my $resultset = $_[1];
-            my $model     = MailAdmin::Schema->connect(sub { return $connector->dbh });
-            return $resultset ? $model->resultset($resultset) : $model;
+            my $dbh       = MailAdmin::Schema->connect(sub { return $connector->dbh });
+            return $resultset ? $dbh->resultset($resultset) : $dbh;
         }
     );
     $self->helper(
@@ -51,6 +56,15 @@ sub startup {
 
             # check if given pass salted and hashed matches
             return Crypt::Passwd::XS::unix_sha512_crypt($password, $salt) eq $user->{password} ? 1 : 0;
+        }
+    );
+
+    $self->helper(
+        trim => sub {
+            my ($self, $string) = @_;
+            $string =~ s/^\s*(.*)\s*$/$1/gmx;
+
+            return $string
         }
     );
 

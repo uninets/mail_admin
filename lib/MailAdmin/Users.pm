@@ -48,7 +48,7 @@ sub update_or_create {
     }
     else {
         $record->{id} = $id if $id;
-        $record->{login} = $username;
+        $record->{login} = $self->trim($username);
         $record->{password} = $self->encrypt_password($password);
         $record->{email} = $email;
 

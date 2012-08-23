@@ -35,7 +35,7 @@ sub update_or_create {
     }
     else {
         $self->flash(class => 'alert alert-info', message => 'Created forward ' . $address );
-        $self->model('Forward')->update_or_create({ email_id => $email_id, address => $address });
+        $self->model('Forward')->update_or_create({ email_id => $email_id, address => $self->trim($address) });
     }
 
     $self->redirect_to('/domains/show/' . $email->domain->id);

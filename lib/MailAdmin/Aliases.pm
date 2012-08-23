@@ -34,7 +34,7 @@ sub update_or_create {
         $self->redirect_to('/domains');
     }
     else {
-        $self->model('Alias')->update_or_create({ email_id => $email_id, address => $address });
+        $self->model('Alias')->update_or_create({ email_id => $email_id, address => $self->trim($address) });
         $self->flash(class => 'alert alert-info', message => 'Created alias ' . $address . '@' . $email->domain->name );
     }
 
