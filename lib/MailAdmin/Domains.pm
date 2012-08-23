@@ -41,7 +41,7 @@ sub update_or_create {
         $self->flash( class => 'alert alert-error', message => 'Domain exist but is not owned by you!' );
     }
     else {
-        $record->{name}    = $domain_name;
+        $record->{name}    = $self->trim($domain_name);
         $record->{user_id} = $user_id;
 
         $self->model('Domain')->update_or_create($record);
