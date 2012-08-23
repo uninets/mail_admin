@@ -17,8 +17,10 @@ use Crypt::Passwd::XS 'unix_sha512_crypt';
 sub startup {
     my $self = shift;
 
+    # load config
     $self->config( YAML::LoadFile('config.yml') );
 
+    # set session secret
     if (defined $self->config->{session_secret}){
         $self->secret( $self->config->{session_secret} );
     }
@@ -26,32 +28,27 @@ sub startup {
         $self->secret( 'xNV3sX7P5xxHzBeNp0YEmDwKpBl6AHIhOpV0v2hXt9chpGnvGUNUtTsYGIb33d94' );
     }
 
+    # build dsn from config
     my $dsn = 'dbi:' . $self->config->{database}->{driver} . ':dbname=' . $self->config->{database}->{dbname} . ';host=' . $self->config->{database}->{dbhost};
+    # prefork save connection handling
     my $connector = DBIx::Connector->new($dsn, $self->config->{database}->{dbuser}, $self->config->{database}->{dbpass});
-
-    use Data::Dumper;
-    say Dumper $self->config;
 
     # Documentation browser under "/perldoc"
     $self->plugin('PODRenderer');
     $self->plugin('TagHelpers');
 
-    $self->helper(
+    my $helpers = {
         model => sub {
             my $resultset = $_[1];
             my $dbh       = MailAdmin::Schema->connect(sub { return $connector->dbh });
             return $resultset ? $dbh->resultset($resultset) : $dbh;
-        }
-    );
-    $self->helper(
+        },
         encrypt_password => sub {
             my ($self, $plaintext) = @_;
 
             my $salt = String::Random::random_string('s' x 16);
             return Crypt::Passwd::XS::unix_sha512_crypt($plaintext, $salt);
-        }
-    );
-    $self->helper(
+        },
         user_authenticate => sub {
             my ($self, $user, $password) = @_;
 
@@ -63,25 +60,23 @@ sub startup {
 
             # check if given pass salted and hashed matches
             return Crypt::Passwd::XS::unix_sha512_crypt($password, $salt) eq $user->{password} ? 1 : 0;
-        }
-    );
-
-    $self->helper(
+        },
         trim => sub {
             my ($self, $string) = @_;
             $string =~ s/^\s*(.*)\s*$/$1/gmx;
 
             return $string
-        }
-    );
-
-    $self->helper(
+        },
         check_user_permission => sub {
             my ($self, $check_id) = @_;
 
             return ($check_id == $self->session('user')->{id} || $self->session('role')->{name} eq 'admin') ? 1 : 0;
         }
-    );
+    };
+
+    for (keys %$helpers){
+        $self->helper( $_ => $helpers->{$_} );
+    }
 
     my $r = $self->routes;
 
