@@ -13,7 +13,7 @@
                 % }
             % }
         </ul>
-        <ul class="nav nav-tabs nav-stacked"><li><a class="alert-success" href="/domains/new">Add Domain</a></li></ul>
+        <ul class="nav nav-tabs nav-stacked"><li><a class="fancybox.ajax fancy-link alert-success" href="/domains/new">Add Domain</a></li></ul>
     </div>
     <div class="content offset3">
         %# use Data::Dumper;
@@ -25,7 +25,7 @@
                     % for my $email (@$emails){
                         <tr>
                             <td>
-                                <a class="label label-important" href="/emails/delete/<%= $email->id %>">delete</a>  <a href="/emails/edit/<%= $email->id %>"><%= $email->address . '@' . $active->name %></a>
+                                <a class="delete label label-important" href="/emails/delete/<%= $email->id %>">delete</a>  <a class="fancybox.ajax fancy-link " href="/emails/edit/<%= $email->id %>"><%= $email->address . '@' . $active->name %></a>
                             </td>
                             <td>
                                 % if ($email->aliases > 0){
@@ -34,7 +34,7 @@
                                         % for my $alias ($email->aliases){
                                         <li>
                                             <span>
-                                                <a class="label label-important" href="/aliases/delete/<%= $alias->id %>">delete</a> <%= $alias->address . '@' . $alias->email->domain->name %>
+                                                <a class="delete label label-important" href="/aliases/delete/<%= $alias->id %>">delete</a> <%= $alias->address . '@' . $alias->email->domain->name %>
                                             </span>
                                         </li>
                                         % }
@@ -44,7 +44,7 @@
                                     <li><p></p></li>
                                     <li>
                                         <span>
-                                            <a class="label label-info" href="/aliases/new/<%= $email->id %>">Add Alias</a>
+                                            <a class="fancybox.ajax fancy-link label label-info" href="/aliases/new/<%= $email->id %>">Add Alias</a>
                                         </span>
                                     </li>
                                 </ul>
@@ -56,7 +56,7 @@
                                         % for my $forward ($email->forwards){
                                         <li>
                                             <span>
-                                                <a class="label label-important" href="/forwards/delete/<%= $forward->id %>">delete</a> <%= $forward->address %>
+                                                <a class="delete label label-important" href="/forwards/delete/<%= $forward->id %>">delete</a> <%= $forward->address %>
                                             </span>
                                         </li>
                                         % }
@@ -66,7 +66,7 @@
                                     <li><p></p></li>
                                     <li>
                                         <span>
-                                            <a class="label label-info" href="/forwards/new/<%= $email->id %>">Add Forward</a>
+                                            <a class="fancybox.ajax fancy-link label label-info" href="/forwards/new/<%= $email->id %>">Add Forward</a>
                                         </span>
                                     </li>
                                 </ul>
@@ -77,8 +77,8 @@
                 % }
             </table>
             <div class="btn-group pull-right">
-                <a class="btn alert-success" href="/emails/new/<%= stash('active')->id %>">Add Email Account</a>
-                <a class="btn alert-error" href="/domains/delete/<%= stash('active')->id %>">Delete Domain</a>
+                <a class="fancybox.ajax fancy-link btn alert-success" href="/emails/new/<%= stash('active')->id %>">Add Email Account</a>
+                <a class="delete btn alert-error" href="/domains/delete/<%= stash('active')->id %>">Delete Domain</a>
             </div>
         % }
     </div>

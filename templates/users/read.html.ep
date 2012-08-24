@@ -24,14 +24,14 @@
                     % $role = $user->role->name;
                 % }
                 <td><%= $role %></td>
-                <td><a href="/users/edit/<%= $user->id %>">edit</a></td>
-                <td><a href="/users/delete/<%= $user->id %>">delete</a></td>
+                <td><a class="fancybox.ajax fancy-link" href="/users/edit/<%= $user->id %>">edit</a></td>
+                <td><a class="delete" href="/users/delete/<%= $user->id %>">delete</a></td>
             </tr>
         % }
     </tbody>
     % }
 </table>
 
-<a class="pull-right btn alert-success" href="/users/new">Add User</a>
+<a class="fancybox.ajax fancy-link pull-right btn alert-success" href="/users/new">Add User</a>
 
 %= include 'elements/footer'
