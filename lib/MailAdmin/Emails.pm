@@ -27,7 +27,8 @@ sub add {
         $self->flash(class => 'alert alert-error', message => 'You are not allowed to add emails to this domain!');
     }
 
-    $self->render( from => $self->req->url->path );
+    $self->layout(undef) if $self->req->is_xhr;
+    $self->render();
 }
 
 sub update_or_create {
