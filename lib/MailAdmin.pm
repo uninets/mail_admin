@@ -20,6 +20,9 @@ sub startup {
     # load config
     $self->config( YAML::LoadFile('config.yml') );
 
+    # add coffee script
+    $self->types->type(coffee => 'text/coffeescript; charset=utf-8');
+
     # set session secret
     if (defined $self->config->{session_secret}){
         $self->secret( $self->config->{session_secret} );

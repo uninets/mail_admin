@@ -19,6 +19,7 @@ sub add {
         $self->redirect('/');
     }
 
+    $self->layout(undef) if $self->req->is_xhr;
     $self->render();
 }
 
