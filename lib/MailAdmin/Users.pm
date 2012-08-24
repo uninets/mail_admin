@@ -58,7 +58,7 @@ sub update_or_create {
         $self->flash(class => 'alert alert-success', message => $id ? "User $username saved" : "User $username created");
 
         # update session data
-        if ($self->session('user')->{id} == $id){
+        if ($id && $self->session('user')->{id} == $id){
             my $user = $self->model('User')->as_hash($id);
             my $role = $self->model('Role')->as_hash({ name => $self->session('role')->{name} });
 
@@ -87,12 +87,13 @@ sub delete {
     my $user = $self->model('User')->find( $self->stash('id'));
     my $name = $user->login;
 
-    if ($user->id == $self->session('user')->{'id'}){
-        $self->flash(class => 'alert alert-error', message => "You can not delete yourself!" );
-    }
-    else {
+    # checks basically if a user has the 'admin' role but does not delete himself
+    if ($self->check_user_permission($user->id) && $user->id != $self->session->{user}->{id}){
         $user->delete;
         $self->flash(class => 'alert alert-info', message => "Deleted $name" );
+    }
+    else {
+        $self->flash(class => 'alert alert-error', message => "You can not delete $name!" );
     }
 
     $self->redirect_to('/users');

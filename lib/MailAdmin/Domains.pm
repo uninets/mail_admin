@@ -89,7 +89,7 @@ sub delete {
     my $domain = $self->model('Domain')->find( { id => $self->stash('id') } );
     my $domain_name = $domain->name;
 
-    if ( $self->session('user')->{id} == $domain->user_id ) {
+    if ( $self->check_user_permission($domain->user_id) ) {
         $domain->delete;
         $self->flash( class => 'alert alert-info', message => "Deleted $domain_name" );
     }
