@@ -6,6 +6,7 @@ use strict;
 use warnings;
 use lib 'lib';
 
+use YAML;
 use MailAdmin::Schema;
 
 my $config = YAML::LoadFile('config.yml');
