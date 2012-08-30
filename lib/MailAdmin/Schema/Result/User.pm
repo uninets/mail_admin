@@ -140,7 +140,7 @@ __PACKAGE__->set_primary_key("id");
 
 =cut
 
-__PACKAGE__->add_unique_constraint("users_login_email_key", ["login", "email"]);
+__PACKAGE__->add_unique_constraint("users_login_key", ["login"]);
 
 =head1 RELATIONS
 
