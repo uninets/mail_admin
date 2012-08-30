@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no_js">
     <head>
         <meta charset="utf-8">
         <title><%= title %></title>
@@ -11,6 +11,10 @@
         <script src="/js/jquery-1.8.0.min.js" type="text/javascript"></script>
         <script src="/js/coffee-script.min.js" type="text/javascript"></script>
         <script src="/coffee/mailadmin.coffee" type="text/coffeescript"></script>
+
+        <!-- humane notifications -->
+        <script type="text/javascript" src="/js/humane.min.js"></script>
+        <link href="/css/jackedup.css" rel="stylesheet">
 
         <!-- Add mousewheel plugin (this is optional) -->
         <script type="text/javascript" src="/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
