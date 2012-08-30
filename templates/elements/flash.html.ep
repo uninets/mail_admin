@@ -1,5 +1,6 @@
 % if ( my $message = flash 'message' ){
     % my $class = flash 'class';
-    <div class="<%= $class %>"><%= $message %></div>
+    <div id="flash-msg" class="<%= $class %>"><%= $message %></div>
+    <script type="text/javascript">$('#flash-msg').hide()</script>
 % }
 
