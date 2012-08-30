@@ -8,7 +8,10 @@ use lib 'lib';
 
 use MailAdmin::Schema;
 
-my $schema = MailAdmin::Schema->connect('dbi:Pg:dbname=mailadmin;host=localhost;user=mailadmin;password=mailadmin;');
+my $config = YAML::LoadFile('config.yml');
+my $dsn    = 'dbi:' . $config->{database}->{driver} . ':dbname=' . $config->{database}->{dbname} . ';host=' . $config->{database}->{dbhost};
+
+my $schema = MailAdmin::Schema->connect($dsn, $config->{database}->{dbuser}, $config->{database}->{dbpass});
 $schema->deploy;
 
 # default admin:password
