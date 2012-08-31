@@ -36,6 +36,9 @@ sub startup {
     # prefork save connection handling
     my $connector = DBIx::Connector->new($dsn, $self->config->{database}->{dbuser}, $self->config->{database}->{dbpass});
 
+    # hold websocket clients
+    my $socket_clients = {};
+
     # Documentation browser under "/perldoc"
     $self->plugin('PODRenderer');
     $self->plugin('TagHelpers');
@@ -74,6 +77,13 @@ sub startup {
             my ($self, $check_id) = @_;
 
             return ($check_id == $self->session('user')->{id} || $self->session('role')->{name} eq 'admin') ? 1 : 0;
+        },
+        clients => sub {
+            my ($self, $name, $client) = @_;
+
+            $socket_clients->{$name} = $client if defined $name;
+
+            return $socket_clients;
         }
     };
 
@@ -186,6 +196,10 @@ sub startup {
     $r->get('/forwards/delete/:id', id => qr|\d+|)
         ->over('authenticated')
         ->to('forwards#delete');
+
+    $r->websocket('/chat')
+        ->over('authenticated')
+        ->to('websocket#chat');
 }
 
 1;

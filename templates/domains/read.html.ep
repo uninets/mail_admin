@@ -14,6 +14,14 @@
             % }
         </ul>
         <ul class="nav nav-tabs nav-stacked"><li><a class="fancybox.ajax fancy-link alert-success" href="/domains/new">Add Domain</a></li></ul>
+        <ul class="nav nav-tabs nav-stacked">
+            <div id="chat_window">
+                <p>
+                    <input id="msg" type="text" />
+                </p>
+                <textarea id="log" rows="10" cols="30" readonly></textarea>
+            </div>
+        </ul>
     </div>
     <div class="content offset3">
         %# use Data::Dumper;
