@@ -2,7 +2,7 @@
 class MailAdmin
     settings:
         keep_alive: true
-        ws_url: 'ws://localhost:3000/chat'
+        ws_url: 'ws://' + location.host + '/chat'
 
     flash: (message, cl) ->
         flash_msg = humane.create
