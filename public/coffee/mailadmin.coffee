@@ -26,7 +26,6 @@ class MailAdmin
             socket.send 'connected'
 
         socket.onmessage = (msg) ->
-            console.log msg.stringify
             res = JSON.parse msg.data
             log '[' + res.hms + '] ' + res.name + ': ' + res.text
 

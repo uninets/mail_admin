@@ -14,8 +14,8 @@ sub chat {
             my ($self, $msg) = @_;
             my $token = $self->config->{keep_alive_token};
 
-            say $msg;
-            if (!($msg ~~ /$token/)){
+            # do nothing if message is a keep-alive token
+            unless ($msg ~~ /$token/){
                 my $json = Mojo::JSON->new;
                 my $dt   = DateTime->now( time_zone => 'Europe/Berlin');
 
@@ -29,9 +29,6 @@ sub chat {
                         })
                     );
                 }
-            }
-            else {
-                say "keepalive token";
             }
         }
     );
