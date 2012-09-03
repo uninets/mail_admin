@@ -36,6 +36,7 @@ sub startup {
         },
         session_secret => 'dQiGD3lE0CUwPQAXAod9hhi6sBSV0DqQDIWoPCd0Ukglu6NiA2maJWhVxfWPH05',
         loglevel => 'info',
+        mode => 'production',
         hypnotoad => {
             listen => ['http://*:8080'],
         },
@@ -218,6 +219,7 @@ sub startup {
             flash  => 1,
         },
         layout => 'mailadmin',
+        env_mode => $self->config->{mode},
     );
 }
 
