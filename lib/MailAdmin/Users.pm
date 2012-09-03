@@ -20,8 +20,8 @@ sub add {
     }
 
     if ($self->req->is_xhr){
-        $self->stash( elements => {}, ajax => 1 );
         $self->layout(undef);
+        $self->stash( elements => {}, ajax => 1 );
     }
 
     $self->render();
@@ -81,6 +81,11 @@ sub read {
     my $self = shift;
 
     my $userlist = [$self->model('User')->all];
+
+    if ($self->req->is_xhr){
+        $self->layout(undef);
+        $self->stash( elements => {}, ajax => 1 );
+    }
 
     $self->render( userlist => $userlist );
 }
