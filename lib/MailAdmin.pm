@@ -23,13 +23,38 @@ sub startup {
     # add coffee script
     $self->types->type(coffee => 'text/coffeescript; charset=utf-8');
 
+    # configuration
+    my $config_file = 'config.yml';
+
+    my $default_config = {
+        database => {
+            driver => 'Pg',
+            dbuser => 'mailadmin',
+            dbname => 'mailadmin',
+            dbpass => 'mailadmin',
+            dbhost => 'localhost',
+        },
+        session_secret => 'dQiGD3lE0CUwPQAXAod9hhi6sBSV0DqQDIWoPCd0Ukglu6NiA2maJWhVxfWPH05',
+        loglevel => 'info',
+        hypnotoad => {
+            listen => ['http://*:8080'],
+        },
+    };
+
+    my $config = {};
+
+    if (-f $config_file){
+        $config = YAML::LoadFile($config_file);
+    }
+
+    # merge loaded config with default config
+    $self->config( { (%$default_config, %$config) } );
+
     # set session secret
-    if (defined $self->config->{session_secret}){
-        $self->secret( $self->config->{session_secret} );
-    }
-    else {
-        $self->secret( 'xNV3sX7P5xxHzBeNp0YEmDwKpBl6AHIhOpV0v2hXt9chpGnvGUNUtTsYGIb33d94' );
-    }
+    $self->secret( $self->config->{session_secret} );
+
+    # set loglevel
+    $self->app->log->level( $self->config->{loglevel} );
 
     # build dsn from config
     my $dsn = 'dbi:' . $self->config->{database}->{driver} . ':dbname=' . $self->config->{database}->{dbname} . ';host=' . $self->config->{database}->{dbhost};
@@ -79,7 +104,7 @@ sub startup {
 
     my $r = $self->routes;
 
-    $r->add_condition(
+    my $conditions = {
         authenticated => sub {
             my ( $r, $self ) = @_;
 
@@ -90,9 +115,7 @@ sub startup {
             }
 
             return 1;
-        }
-    );
-    $r->add_condition(
+        },
         admin_role => sub {
             my ( $r, $self ) = @_;
 
@@ -105,7 +128,12 @@ sub startup {
 
             return 1;
         }
-    );
+    };
+
+    # add conditions
+    for (keys %$conditions){
+        $r->add_condition( $_ => $conditions->{$_} );
+    }
 
     $r->get('/')->to('auth#login');
     $r->get('/login')->to('auth#login');
@@ -189,6 +217,7 @@ sub startup {
             footer => 1,
             flash  => 1,
         },
+        layout => 'mailadmin',
     );
 }
 
