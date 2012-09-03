@@ -14,7 +14,7 @@
 
             % if ($self->stash('env_mode') eq 'development'){
                 <script type="text/javascript" src="/js/coffee-script.min.js"></script>
-                <script type="text/javascript" src="/coffee/mailadmin.coffee"></script>
+                <script type="text/coffeescript" src="/coffee/mailadmin.coffee"></script>
             % } else {
                 <script type="text/javascript" src="/js/mailadmin.js"></script>
             % }
