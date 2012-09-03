@@ -11,7 +11,13 @@
             <script src="/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
 
             <script src="/js/jquery-1.8.0.min.js" type="text/javascript"></script>
-            <script type="text/javascript" src="/js/mailadmin.js"></script>
+
+            % if ($self->stash('env_mode') eq 'development'){
+                <script type="text/javascript" src="/js/coffee-script.min.js"></script>
+                <script type="text/javascript" src="/coffee/mailadmin.coffee"></script>
+            % } else {
+                <script type="text/javascript" src="/js/mailadmin.js"></script>
+            % }
 
             <!-- humane notifications -->
             <script type="text/javascript" src="/js/humane.min.js"></script>
