@@ -1,6 +1,9 @@
 % layout 'mailadmin';
 % title 'Add Domain';
-%= include 'elements/topnav'
+% if ($self->stash('elements')->{topnav}){
+    %= include 'elements/topnav'
+% }
+
 %= include 'elements/flash'
 
 % my $domain = '';
@@ -39,4 +42,6 @@
     </div>
 % end
 
-%= include 'elements/footer'
+% if ($self->stash('elements')->{footer}){
+    %= include 'elements/footer'
+% }

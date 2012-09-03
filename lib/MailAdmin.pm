@@ -36,10 +36,6 @@ sub startup {
     # prefork save connection handling
     my $connector = DBIx::Connector->new($dsn, $self->config->{database}->{dbuser}, $self->config->{database}->{dbpass});
 
-    # Documentation browser under "/perldoc"
-    $self->plugin('PODRenderer');
-    $self->plugin('TagHelpers');
-
     my $helpers = {
         model => sub {
             my $resultset = $_[1];
@@ -186,6 +182,14 @@ sub startup {
     $r->get('/forwards/delete/:id', id => qr|\d+|)
         ->over('authenticated')
         ->to('forwards#delete');
+
+    $self->defaults(
+        elements => {
+            noptav => 1,
+            footer => 1,
+            flash  => 1,
+        },
+    );
 }
 
 1;

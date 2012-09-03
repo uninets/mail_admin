@@ -1,6 +1,9 @@
 % layout 'mailadmin';
 % title 'Add Forward';
-%= include 'elements/topnav'
+% if ($self->stash('elements')->{topnav}){
+    %= include 'elements/topnav'
+% }
+
 %= include 'elements/flash'
 
 %= form_for '/forwards/create' => ( method => 'POST', class => 'well form-horizontal' ) => begin
@@ -21,4 +24,6 @@
     </div>
 % end
 
-%= include 'elements/footer'
+% if ($self->stash('elements')->{footer}){
+    %= include 'elements/footer'
+% }

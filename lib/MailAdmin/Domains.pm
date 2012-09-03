@@ -13,7 +13,11 @@ sub add {
         $self->stash( edit_domain => $self->model('Domain')->find( $self->stash('id') ) );
     }
 
-    $self->layout(undef) if $self->req->is_xhr;
+    if ($self->req->is_xhr){
+        $self->layout(undef);
+        $self->stash( elements => {} );
+    }
+
     $self->render();
 }
 

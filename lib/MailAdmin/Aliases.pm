@@ -12,7 +12,11 @@ sub add {
 
     my $email = $self->model('Email')->find($self->stash('email_id'));
 
-    $self->layout(undef) if $self->req->is_xhr;
+    if ($self->req->is_xhr){
+        $self->layout(undef);
+        $self->stash( elements => {} );
+    }
+
     $self->render( email => $email );
 }
 

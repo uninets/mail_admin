@@ -19,7 +19,11 @@ sub add {
         $self->redirect('/');
     }
 
-    $self->layout(undef) if $self->req->is_xhr;
+    if ($self->req->is_xhr){
+        $self->layout(undef);
+        $self->stash( elements => {} );
+    }
+
     $self->render();
 }
 

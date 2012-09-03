@@ -1,6 +1,9 @@
 % layout 'mailadmin';
 % title 'Add User';
-%= include 'elements/topnav'
+% if ($self->stash('elements')->{topnav}){
+    %= include 'elements/topnav'
+% }
+
 %= include 'elements/flash'
 
 % my $login = '';
@@ -47,4 +50,6 @@
     </div>
 % end
 
-%= include 'elements/footer'
+% if ($self->stash('elements')->{footer}){
+    %= include 'elements/footer'
+% }
