@@ -21,6 +21,7 @@ sub add {
 
     if ($self->req->is_xhr){
         $self->stash( elements => {}, ajax => 1 );
+        $self->layout(undef);
     }
 
     $self->render();

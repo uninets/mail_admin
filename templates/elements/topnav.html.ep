@@ -8,7 +8,7 @@
                     % my $role = session 'role';
                     <li><a href="/domains">Domains</a></li>
                     % if ($role->{name} eq 'admin'){
-                        <li><a href="/users">Users</a></li>
+                        <li><a class="fancybox.ajax fancy-link" href="/users">Users</a></li>
                     % }
                 % }
             </ul>

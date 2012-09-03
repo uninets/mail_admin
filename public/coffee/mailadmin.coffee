@@ -6,13 +6,13 @@ $(document).ready ->
     $('html').removeClass('no_js')
     $('.fancy-link').fancybox
         fitToView         : true
-        autoSize          : true
+        autoSize          : false
+        width             : '710px'
+        height            : 'auto'
         closeClick        : false
         showCloseButton   : false
         transitionIn      : 'fade'
         transitionOut     : 'fade'
-        margin            : 5
-        padding           : 5
 
     $('.delete').click ->
         answer = confirm("Are you sure you want to delete the selected object?")

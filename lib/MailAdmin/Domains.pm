@@ -18,10 +18,6 @@ sub add {
         $self->stash( elements => {} );
     }
 
-    if ($self->req->is_xhr){
-        $self->stash( elements => {}, ajax => 1 );
-    }
-
     $self->render();
 }
 
