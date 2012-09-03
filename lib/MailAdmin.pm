@@ -185,7 +185,7 @@ sub startup {
 
     $self->defaults(
         elements => {
-            noptav => 1,
+            topnav => 1,
             footer => 1,
             flash  => 1,
         },

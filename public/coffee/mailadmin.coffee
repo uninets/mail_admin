@@ -5,11 +5,14 @@ flash = (message, cl) ->
 $(document).ready ->
     $('html').removeClass('no_js')
     $('.fancy-link').fancybox
-        fitToView   : true
-        autoSize    : true
-        closeClick  : false
-        openEffect  : 'none'
-        closeEffect : 'none'
+        fitToView         : true
+        autoSize          : true
+        closeClick        : false
+        showCloseButton   : false
+        transitionIn      : 'fade'
+        transitionOut     : 'fade'
+        margin            : 5
+        padding           : 5
 
     $('.delete').click ->
         answer = confirm("Are you sure you want to delete the selected object?")

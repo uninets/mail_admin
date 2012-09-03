@@ -20,8 +20,7 @@ sub add {
     }
 
     if ($self->req->is_xhr){
-        $self->layout(undef);
-        $self->stash( elements => {} );
+        $self->stash( elements => {}, ajax => 1 );
     }
 
     $self->render();
