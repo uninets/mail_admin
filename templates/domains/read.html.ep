@@ -1,4 +1,3 @@
-% layout 'mailadmin';
 % title 'Domains';
 %= include 'elements/topnav'
 %= include 'elements/flash'
