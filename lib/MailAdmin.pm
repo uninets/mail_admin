@@ -119,6 +119,7 @@ sub startup {
         ->over('authenticated')
         ->to('auth#logout');
 
+    # domains
     $r->get('/domains')
         ->over('authenticated')
         ->to('domains#read');
@@ -130,7 +131,7 @@ sub startup {
         ->to('domains#read');
     $r->post('/domains/create')
         ->over('authenticated')
-        ->to('domains#update_or_create');
+        ->to('domains#create');
     $r->get('/domains/delete/:id', id => qr|\d+|)
         ->over('authenticated')
         ->to('domains#delete');
@@ -154,25 +155,32 @@ sub startup {
         ->over('admin_role')
         ->to('users#delete');
 
+    # emails
     $r->get('/emails/new/:domain_id')
-        ->over('authenticated')
-        ->to('emails#add');
-    $r->get('/emails/edit/:id')
         ->over('authenticated')
         ->to('emails#add');
     $r->post('/emails/create')
         ->over('authenticated')
-        ->to('emails#update_or_create');
+        ->to('emails#create');
+
+    $r->get('/emails/edit/:id')
+        ->over('authenticated')
+        ->to('emails#edit');
+    $r->post('/emails/update')
+        ->over('authenticated')
+        ->to('emails#update');
+
     $r->get('/emails/delete/:id')
         ->over('authenticated')
         ->to('emails#delete');
 
+    # aliases
     $r->get('/aliases/new/:email_id')
         ->over('authenticated')
         ->to('aliases#add');
     $r->post('/aliases/create')
         ->over('authenticated')
-        ->to('aliases#update_or_create');
+        ->to('aliases#create');
     $r->get('/aliases/delete/:id', id => qr|\d+|)
         ->over('authenticated')
         ->to('aliases#delete');

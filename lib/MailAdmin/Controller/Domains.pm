@@ -2,6 +2,7 @@ package MailAdmin::Controller::Domains;
 use lib 'lib';
 use Mojo::Base 'MailAdmin::Controller';
 use Data::Validate::Domain;
+use Try::Tiny;
 
 sub add {
     my $self = shift;
@@ -22,7 +23,7 @@ sub add {
     $self->render();
 }
 
-sub update_or_create {
+sub create {
     my $self = shift;
 
     my $record          = {};
@@ -43,15 +44,26 @@ sub update_or_create {
     if ( !is_domain($domain_name) ) {
         $self->flash( class => 'alert alert-error', message => 'Not a valid domain name!' );
     }
-    elsif ( defined $domain && !$self->check_user_permission($domain->user_id)){
-        $self->flash( class => 'alert alert-error', message => 'Domain exist but is not owned by you!' );
+    elsif ( defined $domain ){
+        $self->flash( class => 'alert alert-error', message => 'Domain exist!' );
     }
     else {
         $record->{name}    = $self->trim($domain_name);
         $record->{user_id} = $user_id;
 
-        $self->model('Domain')->update_or_create($record);
-        $self->flash( class => 'alert alert-success', message => "Domain $domain_name created" );
+        my $result = undef;
+
+        try {
+            $result = $self->model('Domain')->create($record);
+        };
+
+        if (defined $result){
+            $self->flash( class => 'alert alert-success', message => "Domain $domain_name created" );
+        }
+        else {
+            $self->flash( class => 'alert alert-error', message => 'Oops! Something went wrong saving the domain!' );
+        }
+
         $redirect_target = '/domains';
     }
 

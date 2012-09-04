@@ -2,6 +2,7 @@ package MailAdmin::Controller::Aliases;
 use lib 'lib';
 use Mojo::Base 'MailAdmin::Controller';
 use Email::Valid;
+use Try::Tiny;
 
 sub add {
     my $self = shift;
@@ -21,7 +22,7 @@ sub add {
     $self->render( email => $email );
 }
 
-sub update_or_create {
+sub create {
     my $self = shift;
 
     my $record = {};
@@ -40,18 +41,21 @@ sub update_or_create {
         $self->redirect_to('/domains');
     }
     else {
-        $self->model('Alias')->update_or_create({ email_id => $email_id, address => $self->trim($address) });
-        $self->flash(class => 'alert alert-info', message => 'Created alias ' . $address . '@' . $email->domain->name );
+        my $result = undef;
+
+        try {
+            $result = $self->model('Alias')->create({ email_id => $email_id, address => $self->trim($address) });
+        };
+
+        if (defined $result){
+            $self->flash(class => 'alert alert-info', message => 'Created alias ' . $address . '@' . $email->domain->name );
+        }
+        else {
+            $self->flash(class => 'alert alert-error', message => 'Oops! Something went wrong saving the forward!');
+        }
     }
 
     $self->redirect_to('/domains/show/' . $email->domain->id);
-}
-
-sub read {
-    my $self = shift;
-
-
-    $self->render();
 }
 
 sub delete {
