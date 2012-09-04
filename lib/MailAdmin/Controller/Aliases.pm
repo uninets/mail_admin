@@ -1,4 +1,4 @@
-package MailAdmin::Aliases;
+package MailAdmin::Controller::Aliases;
 use Mojo::Base 'Mojolicious::Controller';
 use Email::Valid;
 

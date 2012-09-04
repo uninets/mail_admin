@@ -1,4 +1,4 @@
-package MailAdmin::Users;
+package MailAdmin::Controller::Users;
 use Mojo::Base 'Mojolicious::Controller';
 use Email::Valid;
 

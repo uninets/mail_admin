@@ -1,4 +1,4 @@
-package MailAdmin::Domains;
+package MailAdmin::Controller::Domains;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Validate::Domain;
 

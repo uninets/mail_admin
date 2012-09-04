@@ -1,4 +1,4 @@
-package MailAdmin::Auth;
+package MailAdmin::Controller::Auth;
 use Mojo::Base 'Mojolicious::Controller';
 use DBIx::Class::ResultClass::HashRefInflator;
 

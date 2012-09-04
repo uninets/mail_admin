@@ -4,6 +4,7 @@ use lib 'lib';
 
 # database schema and connection manager
 use MailAdmin::Schema;
+use MailAdmin::Controller;
 use DBIx::Connector;
 
 # to load config
@@ -56,6 +57,13 @@ sub startup {
 
     # set loglevel
     $self->app->log->level( $self->config->{loglevel} );
+
+    # set mode
+    $self->app->mode( $self->config->{mode} );
+
+    # set controller class
+    $self->controller_class('MailAdmin::Controller');
+    $self->routes->namespace('MailAdmin::Controller');
 
     # build dsn from config
     my $dsn = 'dbi:' . $self->config->{database}->{driver} . ':dbname=' . $self->config->{database}->{dbname} . ';host=' . $self->config->{database}->{dbhost};
