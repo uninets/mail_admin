@@ -1,5 +1,6 @@
 package MailAdmin::Controller::Forwards;
-use Mojo::Base 'Mojolicious::Controller';
+use lib 'lib';
+use Mojo::Base 'MailAdmin::Controller';
 use Email::Valid;
 
 sub add {

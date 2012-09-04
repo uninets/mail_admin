@@ -1,5 +1,6 @@
 package MailAdmin::Controller::Domains;
-use Mojo::Base 'Mojolicious::Controller';
+use lib 'lib';
+use Mojo::Base 'MailAdmin::Controller';
 use Data::Validate::Domain;
 
 sub add {

@@ -10,10 +10,6 @@ use DBIx::Connector;
 # to load config
 use YAML;
 
-# for encrypt helper
-use String::Random;
-use Crypt::Passwd::XS 'unix_sha512_crypt';
-
 # This method will run once at server start
 sub startup {
     my $self = shift;
@@ -76,35 +72,6 @@ sub startup {
             my $dbh       = MailAdmin::Schema->connect(sub { return $connector->dbh });
             return $resultset ? $dbh->resultset($resultset) : $dbh;
         },
-        encrypt_password => sub {
-            my ($self, $plaintext) = @_;
-
-            my $salt = String::Random::random_string('s' x 16);
-            return Crypt::Passwd::XS::unix_sha512_crypt($plaintext, $salt);
-        },
-        user_authenticate => sub {
-            my ($self, $user, $password) = @_;
-
-            # get salt of user
-            my $salt = (split /\$/, $user->{password})[2];
-
-            # no salt? user does not exist
-            return 0 unless $salt;
-
-            # check if given pass salted and hashed matches
-            return Crypt::Passwd::XS::unix_sha512_crypt($password, $salt) eq $user->{password} ? 1 : 0;
-        },
-        trim => sub {
-            my ($self, $string) = @_;
-            $string =~ s/^\s*(.*)\s*$/$1/gmx;
-
-            return $string
-        },
-        check_user_permission => sub {
-            my ($self, $check_id) = @_;
-
-            return ($check_id == $self->session('user')->{id} || $self->session('role')->{name} eq 'admin') ? 1 : 0;
-        }
     };
 
     for (keys %$helpers){
