@@ -15,7 +15,9 @@ my $dsn    = 'dbi:' . $config->{database}->{driver} . ':dbname=' . $config->{dat
 my $schema = MailAdmin::Schema->connect($dsn, $config->{database}->{dbuser}, $config->{database}->{dbpass});
 $schema->deploy;
 
+if ($ARGV[0] eq 'bootstrap_admin'){
 # default admin:password
-$schema->resultset('Role')->create({ name => 'admin', id => 1 });
-$schema->resultset('User')->create({ login => 'admin', email => 'admin@example.com', role_id => 1, password => '$6$salt$IxDD3jeSOb5eB1CX5LBsqZFVkJdido3OUILO5Ifz5iwMuTS4XMS130MTSuDDl3aCI6WouIL9AjRbLCelDCy.g.'});
+    $schema->resultset('Role')->create({ name => 'admin', id => 1 });
+    $schema->resultset('User')->create({ login => 'admin', email => 'admin@example.com', role_id => 1, password => '$6$salt$IxDD3jeSOb5eB1CX5LBsqZFVkJdido3OUILO5Ifz5iwMuTS4XMS130MTSuDDl3aCI6WouIL9AjRbLCelDCy.g.'});
+}
 
