@@ -11,7 +11,6 @@ sub login {
 
 sub authenticate {
     my $self = shift;
-    my $redirect_target = '/domains';
 
     my $username = $self->param('username');
     my $password = $self->param('password');
@@ -24,13 +23,13 @@ sub authenticate {
         delete $user->{password};
         $self->session( authenticated => 1, user => $user, role => $role ? $role : { name => 'none' } );
         $self->flash(class => 'alert alert-success', message => 'Login successful!');
+
+        $self->redirect_to( '/domains' );
     }
     else {
-        $redirect_target = '/login';
         $self->flash(class => 'alert alert-error', message => "Login failed!");
+        $self->redirect_to( '/login' );
     }
-
-    $self->redirect_to($redirect_target);
 }
 
 sub logout {
