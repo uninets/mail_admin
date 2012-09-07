@@ -38,7 +38,7 @@ sub create {
     }
     elsif (!(Email::Valid->address($address . '@' . $email->domain->name))){
         $self->flash(class => 'alert alert-error', message => $address . '@' . $email->domain->name . ' is not a valid email address!');
-        $self->redirect_to('/domains');
+        $self->redirect_to('/domains/show/' . $email->domain->id);
     }
     else {
         my $result = undef;
@@ -49,13 +49,13 @@ sub create {
 
         if (defined $result){
             $self->flash(class => 'alert alert-info', message => 'Created alias ' . $address . '@' . $email->domain->name );
+            $self->redirect_to('/domains/show/' . $email->domain->id);
         }
         else {
             $self->flash(class => 'alert alert-error', message => 'Oops! Something went wrong saving the forward!');
+            $self->redirect_to('/domains/show/' . $email->domain->id);
         }
     }
-
-    $self->redirect_to('/domains/show/' . $email->domain->id);
 }
 
 sub delete {

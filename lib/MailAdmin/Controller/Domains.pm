@@ -27,7 +27,6 @@ sub create {
     my $self = shift;
 
     my $record          = {};
-    my $redirect_target = '/domains/new';
 
     my $domain_name = $self->param('name');
     my $user_id     = undef;
@@ -43,9 +42,11 @@ sub create {
 
     if ( !is_domain($domain_name) ) {
         $self->flash( class => 'alert alert-error', message => 'Not a valid domain name!' );
+        $self->redirect_to('/domains');
     }
     elsif ( defined $domain ){
         $self->flash( class => 'alert alert-error', message => 'Domain exist!' );
+        $self->redirect_to('/domains');
     }
     else {
         $record->{name}    = $self->trim($domain_name);
@@ -59,15 +60,13 @@ sub create {
 
         if (defined $result){
             $self->flash( class => 'alert alert-success', message => "Domain $domain_name created" );
+            $self->redirect_to('domains/show/' . $result->id);
         }
         else {
             $self->flash( class => 'alert alert-error', message => 'Oops! Something went wrong saving the domain!' );
+            $self->redirect_to('/domains');
         }
-
-        $redirect_target = '/domains';
     }
-
-    $self->redirect_to($redirect_target);
 }
 
 sub read {

@@ -80,7 +80,6 @@ sub update {
     my $self = shift;
 
     my $record = {};
-    my $redirect_target = '/users/new';
 
     my $username = $self->param('login');
     my $id = $self->param('id');
@@ -117,10 +116,8 @@ sub update {
             $self->session( authenticated => 1, user => $user, role => $role ? $role : { name => 'none' } );
         }
 
-        $redirect_target = $self->session->{role}->{name} eq 'admin' ? '/users/list' : '/domains';
+        $self->redirect_to( $self->session->{role}->{name} eq 'admin' ? '/users/list' : '/domains' );
     }
-
-    $self->redirect_to($redirect_target);
 }
 
 sub read {
