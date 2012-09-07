@@ -95,7 +95,6 @@ sub read {
 
     $self->stash( emails => $emails );
 
-
     $self->render();
 }
 

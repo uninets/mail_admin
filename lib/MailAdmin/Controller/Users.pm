@@ -2,6 +2,7 @@ package MailAdmin::Controller::Users;
 use lib 'lib';
 use Mojo::Base 'MailAdmin::Controller';
 use Email::Valid;
+use DateTime;
 
 sub add {
     my $self = shift;
@@ -101,6 +102,7 @@ sub update {
         $record->{login} = $self->trim($username);
         $record->{password} = $self->encrypt_password($password);
         $record->{email} = $email;
+        $record->{updated_at} = DateTime->now->strftime('%F %T');
 
         $self->model('User')->update_or_create($record);
 

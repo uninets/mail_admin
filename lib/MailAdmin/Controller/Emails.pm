@@ -3,6 +3,7 @@ use lib 'lib';
 use Mojo::Base 'MailAdmin::Controller';
 use Email::Valid;
 use Try::Tiny;
+use DateTime;
 
 sub add {
     my $self = shift;
@@ -141,6 +142,7 @@ sub update {
         $record->{domain_id} = $domain_id;
         $record->{password} = $self->encrypt_password($password);
         $record->{id} = $id;
+        $record->{updated_at} = DateTime->now->strftime('%F %T');
 
         my $result = undef;
 
