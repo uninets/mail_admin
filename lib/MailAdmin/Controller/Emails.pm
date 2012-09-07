@@ -64,7 +64,7 @@ sub create {
 
     my $record          = {};
 
-    my $address = $self->param('address');
+    my $address = $self->trim($self->param('address'));
     my $password = $self->param('password');
     my $password_v = $self->param('password_verify');
     my $domain_id = $self->param('domain_id');
@@ -84,7 +84,7 @@ sub create {
         $self->redirect_to('/domains');
     }
     else {
-        $record->{address} = $self->trim($address);
+        $record->{address} = $address;
         $record->{domain_id} = $domain_id;
         $record->{password} = $self->encrypt_password($password);
 
@@ -112,35 +112,35 @@ sub update {
     my $record          = {};
     my $redirect_target = $self->stash('from');
 
-    my $address = $self->param('address');
+    my $address = $self->trim($self->param('address'));
     my $password = $self->param('password');
     my $password_v = $self->param('password_verify');
     my $id = $self->param('id');
-    my $domain_id = $self->param('domain_id');
 
-    $domain_id = $self->model('Email')->find($id)->domain_id unless $domain_id;
+    my $domain_id = $self->model('Email')->find($id)->domain_id;
     my $domain = $self->model('Domain')->find($domain_id);
 
     if (!$domain){
         $self->flash(class => 'alert alert-error', message => 'No such domain');
+        $self->redirect_to('/domains');
     }
-    elsif (!$self->check_user_permission($domain->user_id) ){
-        $self->flash(class => 'alert alert-error', message => 'Not authorized to add email accounts to this domain!');
+    elsif (!$domain_id){
+        $self->flash(class => 'alert alert-error', message => 'Address does not exist!');
+        $self->redirect_to('/domains');
     }
-    elsif (!Email::Valid->address($address . '@' . $domain->name)){
-        $self->flash(class => 'alert alert-error', message => $address . '@' . $domain->name . ' is no valid email address!');
-    }
-    elsif ($password ne $password_v){
-        $self->flash(class => 'alert alert-error', message => 'Passords do not match!');
-    }
-    elsif ($password eq ''){
-        $self->flash(class => 'alert alert-error', message => 'Passord must not be empty!');
+    elsif (!$self->_validate_form({
+                    user_id => $domain->user_id,
+                    address => $address . '@' . $domain->name,
+                    password => $password,
+                    password_v => $password_v,
+                })){
+        $self->redirect_to('/domains');
     }
     else {
-        $record->{address} = $self->trim($address);
+        $record->{address} = $address;
         $record->{domain_id} = $domain_id;
         $record->{password} = $self->encrypt_password($password);
-        $record->{id} = $id if $id;
+        $record->{id} = $id;
 
         my $result = undef;
 

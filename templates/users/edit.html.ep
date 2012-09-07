@@ -1,21 +1,30 @@
-% title 'Add User';
+% title 'Edit User';
 % if ($self->stash('elements')->{topnav}){
     %= include 'elements/topnav'
 % }
 
 %= include 'elements/flash'
 
-%= form_for '/users/create' => ( method => 'POST', class => 'well form-horizontal' ) => begin
+% my $login = '';
+% my $uid = undef;
+% my $email = '';
+% if (my $user = stash 'user'){
+    % $login = $user->login;
+    % $uid = $user->id;
+    % $email = $user->email;
+% }
+
+%= form_for '/users/update' => ( method => 'POST', class => 'well form-horizontal' ) => begin
     <div class="control-group">
         <label class="control-label">Login Name</label>
         <div class="controls">
-                %= text_field 'login', class => 'span3', type => 'text'
+                %= text_field 'login', class => 'span3', type => 'text', value => $login
         </div>
     </div>
     <div class="control-group">
         <label class="control-label">Email Address</label>
         <div class="controls">
-                %= text_field 'email', class => 'span3', type => 'text'
+                %= text_field 'email', class => 'span3', type => 'text', value => $email
         </div>
     </div>
     <div class="control-group">
@@ -30,9 +39,10 @@
                 %= password_field 'password_verify'
         </div>
     </div>
+    %= hidden_field 'id', $uid
     <div class="control-group">
         <div class="controls">
-                %= submit_button 'Create user', class => 'btn'
+                %= submit_button 'Save', class => 'btn'
         </div>
     </div>
 % end

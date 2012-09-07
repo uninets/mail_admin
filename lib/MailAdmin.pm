@@ -136,15 +136,19 @@ sub startup {
         ->over('authenticated')
         ->to('domains#delete');
 
+    # users
     $r->get('/users/new')
         ->over('admin_role')
         ->to('users#add');
     $r->get('/users/edit/:id', id => qr|\d+|)
         ->over('authenticated')
-        ->to('users#add');
-    $r->post('/users/create')
+        ->to('users#edit');
+    $r->post('/users/update')
         ->over('authenticated')
-        ->to('users#update_or_create');
+        ->to('users#update');
+    $r->post('/users/create')
+        ->over('admin_role')
+        ->to('users#create');
     $r->get('/users/list')
         ->over('admin_role')
         ->to('users#read');
@@ -185,6 +189,7 @@ sub startup {
         ->over('authenticated')
         ->to('aliases#delete');
 
+    # forwards
     $r->get('/forwards/new/:email_id')
         ->over('authenticated')
         ->to('forwards#add');
