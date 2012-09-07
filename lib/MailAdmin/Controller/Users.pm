@@ -1,8 +1,25 @@
-package MailAdmin::Users;
-use Mojo::Base 'Mojolicious::Controller';
+package MailAdmin::Controller::Users;
+use lib 'lib';
+use Mojo::Base 'MailAdmin::Controller';
 use Email::Valid;
 
 sub add {
+    my $self = shift;
+
+    if (!$self->session->{role}->{name} eq 'admin'){
+        $self->flash( class => 'alert alert-error', message => 'Only admins can create users!');
+        $self->redirect('/');
+    }
+
+    if ($self->req->is_xhr){
+        $self->layout(undef);
+        $self->stash( elements => {}, ajax => 1 );
+    }
+
+    $self->render();
+}
+
+sub edit {
     my $self = shift;
 
     if (my $id = $self->stash('id')){
@@ -12,7 +29,7 @@ sub add {
             $self->flash( class => 'alert alert-error', message => 'You can not change other users!');
             $self->redirect('/');
         }
-        $self->stash( edit_user => $user );
+        $self->stash( user => $user );
     }
     elsif (!$self->session->{role}->{name} eq 'admin'){
         $self->flash( class => 'alert alert-error', message => 'Only admins can create users!');
@@ -27,7 +44,39 @@ sub add {
     $self->render();
 }
 
-sub update_or_create {
+sub create {
+    my $self = shift;
+
+    my $record = {};
+
+    my $username = $self->trim($self->param('login'));
+    my $password = $self->param('password');
+    my $password_v = $self->param('password_verify');
+    my $email = $self->trim($self->param('email'));
+
+    if (!$self->_validate_form({
+                    user_id => $self->session->{user}->{id},
+                    username => $username,
+                    email => $email,
+                    password => $password,
+                    password_v => $password_v,
+                })){
+        $self->redirect_to('/domains');
+    }
+    else {
+        $record->{login} = $username;
+        $record->{password} = $self->encrypt_password($password);
+        $record->{email} = $email;
+
+        $self->model('User')->update_or_create($record);
+
+        $self->flash(class => 'alert alert-success', message => "User $username created");
+
+        $self->redirect_to($self->session->{role}->{name} eq 'admin' ? '/users/list' : '/domains');
+    }
+}
+
+sub update {
     my $self = shift;
 
     my $record = {};
@@ -39,17 +88,14 @@ sub update_or_create {
     my $password_v = $self->param('password_verify');
     my $email = $self->param('email');
 
-    if (!Email::Valid->address($email)){
-        $self->flash(class => 'alert alert-error', message => 'Invalid email address!');
-    }
-    elsif ($password ne $password_v){
-        $self->flash(class => 'alert alert-error', message => 'Passwords do not match!');
-    }
-    elsif ($password eq ''){
-        $self->flash(class => 'alert alert-error', message => 'Password must not be empty!');
-    }
-    elsif ($username !~ /[a-zA-Z]{3,10}/){
-        $self->flash(class => 'alert alert-error', message => 'Username must match /[a-zA-Z]{3,10}/!');
+    if (!$self->_validate_form({
+                    user_id => $self->session->{user}->{id},
+                    username => $username,
+                    email => $email,
+                    password => $password,
+                    password_v => $password_v,
+                })){
+        $self->redirect_to('/domains');
     }
     else {
         $record->{id} = $id if $id;
@@ -106,6 +152,33 @@ sub delete {
     }
 
     $self->redirect_to('/users');
+}
+
+sub _validate_form {
+    my ($self, $data) = @_;
+
+    if (!$self->check_user_permission($data->{user_id})){
+        $self->flash(class => 'alert alert-error', message => 'Not authorized to add email accounts to this domain!');
+        return 0;
+    }
+    elsif (!Email::Valid->address($data->{email})){
+        $self->flash(class => 'alert alert-error', message => 'Invalid email address!');
+        return 0;
+    }
+    elsif ($data->{password} ne $data->{password_v}){
+        $self->flash(class => 'alert alert-error', message => 'Passwords do not match!');
+        return 0;
+    }
+    elsif ($data->{password} eq ''){
+        $self->flash(class => 'alert alert-error', message => 'Password must not be empty!');
+        return 0;
+    }
+    elsif ($data->{username} !~ /[a-zA-Z]{3,10}/){
+        $self->flash(class => 'alert alert-error', message => 'Username must match /[a-zA-Z]{3,10}/!');
+        return 0;
+    }
+
+    return 1;
 }
 
 1;

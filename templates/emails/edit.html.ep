@@ -5,13 +5,26 @@
 
 %= include 'elements/flash'
 
+% my $address = '';
+% my $id = undef;
 % my $domain_id = stash('domain')->id;
+% my $buttontext = 'Create Email Account';
+% if (my $email = stash 'edit_email'){
+    % $address = $email->address;
+    % $id = $email->id;
+    % $domain_id = $email->domain_id;
+    % $buttontext = 'Save Email Account';
+% }
 
-%= form_for '/emails/create' => ( method => 'POST', class => 'well form-horizontal' ) => begin
+%= form_for '/emails/update' => ( method => 'POST', class => 'well form-horizontal' ) => begin
     <div class="control-group">
         <label for="" class="control-label">Email Address</label>
         <div class="controls">
-            %= text_field 'address', class => 'span3', type => 'text'
+            % my $value = '';
+            % if ( stash('edit_email')){
+            %     $value = stash('edit_email')->address;
+            % }
+            %= text_field 'address', class => 'span3', type => 'text', value => $value
             % if (my $domain = stash 'domain'){
                 %= '@' . $domain->name
             % }
@@ -29,10 +42,11 @@
                 %= password_field 'password_verify'
         </div>
     </div>
+    %= hidden_field 'id', $id
     %= hidden_field 'domain_id', $domain_id
     <div class="control-group">
         <div class="controls">
-                %= submit_button 'Create email address', class => 'btn'
+                %= submit_button $buttontext, class => 'btn'
         </div>
     </div>
 % end
