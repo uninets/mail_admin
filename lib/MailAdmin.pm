@@ -4,14 +4,11 @@ use lib 'lib';
 
 # database schema and connection manager
 use MailAdmin::Schema;
+use MailAdmin::Controller;
 use DBIx::Connector;
 
 # to load config
 use YAML;
-
-# for encrypt helper
-use String::Random;
-use Crypt::Passwd::XS 'unix_sha512_crypt';
 
 # This method will run once at server start
 sub startup {
@@ -57,6 +54,13 @@ sub startup {
     # set loglevel
     $self->app->log->level( $self->config->{loglevel} );
 
+    # set mode
+    $self->app->mode( $self->config->{mode} );
+
+    # set controller class
+    $self->controller_class('MailAdmin::Controller');
+    $self->routes->namespace('MailAdmin::Controller');
+
     # build dsn from config
     my $dsn = 'dbi:' . $self->config->{database}->{driver} . ':dbname=' . $self->config->{database}->{dbname} . ';host=' . $self->config->{database}->{dbhost};
     # prefork save connection handling
@@ -68,35 +72,6 @@ sub startup {
             my $dbh       = MailAdmin::Schema->connect(sub { return $connector->dbh });
             return $resultset ? $dbh->resultset($resultset) : $dbh;
         },
-        encrypt_password => sub {
-            my ($self, $plaintext) = @_;
-
-            my $salt = String::Random::random_string('s' x 16);
-            return Crypt::Passwd::XS::unix_sha512_crypt($plaintext, $salt);
-        },
-        user_authenticate => sub {
-            my ($self, $user, $password) = @_;
-
-            # get salt of user
-            my $salt = (split /\$/, $user->{password})[2];
-
-            # no salt? user does not exist
-            return 0 unless $salt;
-
-            # check if given pass salted and hashed matches
-            return Crypt::Passwd::XS::unix_sha512_crypt($password, $salt) eq $user->{password} ? 1 : 0;
-        },
-        trim => sub {
-            my ($self, $string) = @_;
-            $string =~ s/^\s*(.*)\s*$/$1/gmx;
-
-            return $string
-        },
-        check_user_permission => sub {
-            my ($self, $check_id) = @_;
-
-            return ($check_id == $self->session('user')->{id} || $self->session('role')->{name} eq 'admin') ? 1 : 0;
-        }
     };
 
     for (keys %$helpers){
@@ -144,6 +119,7 @@ sub startup {
         ->over('authenticated')
         ->to('auth#logout');
 
+    # domains
     $r->get('/domains')
         ->over('authenticated')
         ->to('domains#read');
@@ -155,20 +131,24 @@ sub startup {
         ->to('domains#read');
     $r->post('/domains/create')
         ->over('authenticated')
-        ->to('domains#update_or_create');
+        ->to('domains#create');
     $r->get('/domains/delete/:id', id => qr|\d+|)
         ->over('authenticated')
         ->to('domains#delete');
 
+    # users
     $r->get('/users/new')
         ->over('admin_role')
         ->to('users#add');
     $r->get('/users/edit/:id', id => qr|\d+|)
         ->over('authenticated')
-        ->to('users#add');
-    $r->post('/users/create')
+        ->to('users#edit');
+    $r->post('/users/update')
         ->over('authenticated')
-        ->to('users#update_or_create');
+        ->to('users#update');
+    $r->post('/users/create')
+        ->over('admin_role')
+        ->to('users#create');
     $r->get('/users/list')
         ->over('admin_role')
         ->to('users#read');
@@ -179,29 +159,37 @@ sub startup {
         ->over('admin_role')
         ->to('users#delete');
 
+    # emails
     $r->get('/emails/new/:domain_id')
-        ->over('authenticated')
-        ->to('emails#add');
-    $r->get('/emails/edit/:id')
         ->over('authenticated')
         ->to('emails#add');
     $r->post('/emails/create')
         ->over('authenticated')
-        ->to('emails#update_or_create');
+        ->to('emails#create');
+
+    $r->get('/emails/edit/:id')
+        ->over('authenticated')
+        ->to('emails#edit');
+    $r->post('/emails/update')
+        ->over('authenticated')
+        ->to('emails#update');
+
     $r->get('/emails/delete/:id')
         ->over('authenticated')
         ->to('emails#delete');
 
+    # aliases
     $r->get('/aliases/new/:email_id')
         ->over('authenticated')
         ->to('aliases#add');
     $r->post('/aliases/create')
         ->over('authenticated')
-        ->to('aliases#update_or_create');
+        ->to('aliases#create');
     $r->get('/aliases/delete/:id', id => qr|\d+|)
         ->over('authenticated')
         ->to('aliases#delete');
 
+    # forwards
     $r->get('/forwards/new/:email_id')
         ->over('authenticated')
         ->to('forwards#add');
